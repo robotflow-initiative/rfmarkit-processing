@@ -1,0 +1,11 @@
+/*.json
+imu_data
+data
+build
+.vscode
+.ipynb_checkoints
+*.pyc
+*.npz
+*.code-workspace
+*.csv
+*.DS_Store
