@@ -2,6 +2,7 @@
 imu_data
 data
 build
+measurement
 .vscode
 .ipynb_checkoints
 *.pyc
@@ -9,3 +10,4 @@ build
 *.code-workspace
 *.csv
 *.DS_Store
+*.zip
