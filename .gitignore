@@ -3,6 +3,7 @@ imu_data
 data
 build
 measurement
+imu_mem
 .vscode
 .ipynb_checkoints
 *.pyc
@@ -11,3 +12,4 @@ measurement
 *.csv
 *.DS_Store
 *.zip
+*.pkl

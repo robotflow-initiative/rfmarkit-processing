@@ -1,6 +1,6 @@
 {
-  "port": "COM4",
-  "baudrate": 115200,
+  "port": "/dev/cu.usbserial-1124440",
+  "baudrate": 921600,
   "report_datatype": {
     "imusol": true,
     "gwsol": true,   
