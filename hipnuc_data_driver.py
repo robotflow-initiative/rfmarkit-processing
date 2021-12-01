@@ -47,4 +47,4 @@ class HIPNUCDataDriver:
 
 if __name__ == '__main__':
     driver = HIPNUCDataDriver(freq=200)
-    driver('/Users/liyutong/projectExchange/imu-python-tools/hipnuc_mem/data_20211124_212441.csv')
+    driver('/Users/liyutong/projectExchange/imu-python-tools/hipnuc_mem/data_20211126_210733.csv')
