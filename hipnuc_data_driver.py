@@ -46,5 +46,8 @@ class HIPNUCDataDriver:
         np.savez(os.path.join(os.path.dirname(path), filename), **res)
 
 if __name__ == '__main__':
+    import glob
     driver = HIPNUCDataDriver(freq=200)
-    driver('/Users/liyutong/projectExchange/imu-python-tools/hipnuc_mem/data_20211126_210733.csv')
+    for file in glob.glob('/Users/liyutong/projectExchange/imu-python-tools/hipnuc_mem/*.csv'):
+        print(file)
+        driver(file)
