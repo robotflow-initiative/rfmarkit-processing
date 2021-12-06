@@ -4,6 +4,8 @@ data
 build
 measurement
 imu_mem
+hipunuc_mem
+delata10_mem
 .vscode
 .ipynb_checkoints
 *.pyc
@@ -13,3 +15,4 @@ imu_mem
 *.DS_Store
 *.zip
 *.pkl
+.ipynb_checkoints

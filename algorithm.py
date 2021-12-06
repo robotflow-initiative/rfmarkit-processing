@@ -9,10 +9,6 @@ from scipy import signal
 
 from typing import List, Any, Dict, Union, Tuple
 
-from helpers import vectorize_to_np
-
-
-
 class IMUAlgorithm(object):
     GRAVITY_NORM: float = 9.7964
 
@@ -61,6 +57,7 @@ class IMUAlgorithm(object):
         ax = fig.add_subplot(111)
         ax.scatter(timestamp, data, s=2)
         ax.set_title(title)
+        plt.gca().set_aspect('equal', adjustable='box')
 
         plt.show()
 
@@ -68,12 +65,23 @@ class IMUAlgorithm(object):
     def filter_bandpass(cls,
                         data: np.ndarray,
                         band: Tuple[float, float] = (0.001, 8),
-                        order: int = 1,
+                        order: int = 7,
                         sample_freq: float = 100):
         res: np.array = np.copy(data)
-        b, a = signal.butter(order, tuple(map(lambda x: 2 * x / sample_freq, band)), 'bandpass')
+        sos = signal.butter(order, tuple(map(lambda x: 2 * x / sample_freq, band)), 'bandpass', output='sos')
         for i in range(res.shape[-1]):
-            res[..., i] = signal.filtfilt(b, a, data[..., i])
+            res[..., i] = signal.sosfiltfilt(sos, data[..., i])
+
+        # FIXME: Experimental
+        # res -= np.linspace(res[0,:],np.array([0,0,0]), len(res))
+        return res
+
+    @classmethod
+    def filter_lowpass(cls, data: np.ndarray, band: int = 8, order: int = 7, sample_freq: float = 100):
+        res: np.array = np.copy(data)
+        sos = signal.butter(order, 2 * band / sample_freq, 'low', output='sos')
+        for i in range(res.shape[-1]):
+            res[..., i] = signal.sosfiltfilt(sos, data[..., i])
 
         # FIXME: Experimental
         # res -= np.linspace(res[0,:],np.array([0,0,0]), len(res))
@@ -82,7 +90,7 @@ class IMUAlgorithm(object):
     @classmethod
     def filter_middle(cls, data: np.ndarray, windows_sz: int = 5):
         res = np.copy(data)
-        for idx in range(len(data) - windows_sz + 1):
+        for idx in range(len(data) - windows_sz):
             res[idx:idx + windows_sz] = np.repeat(np.expand_dims(np.mean(res[idx:idx + windows_sz], axis=0), axis=0),
                                                   windows_sz,
                                                   axis=0)
@@ -112,7 +120,6 @@ class IMUAlgorithm(object):
         if trim_thresh <= 0:
             trim_thresh = np.where(np.squeeze(npzfile['uart_buffer_len']) < 10)[0].min()
 
-        # FIXME Experimental
         accel_i = accel_i[trim_thresh:]
         gyro = gyro[trim_thresh:]
         rpy = rpy[trim_thresh:]
@@ -138,9 +145,6 @@ class IMUAlgorithm(object):
 
         GRAVITY_SHANGHAI = np.array([0, 0, -cls.GRAVITY_NORM])
 
-        # for i in range(len(timestamp)):
-        #     accel_w[i] = pose_mat[i].T @ accel_i[i] - GRAVITY_SHANGHAI
-
         # Sustract gravity
         gravity_i = np.empty_like(accel_i)
         for i in range(len(timestamp)):
@@ -157,14 +161,14 @@ class IMUAlgorithm(object):
         return {'accel_w': accel_w, 'gravity_i': gravity_i}
 
     @classmethod
-    def zero_vel_determination(cls, gyro: np.ndarray, accel_i: np.ndarray, thresh: Tuple[float] = (1, np.inf, np.inf, np.inf)) -> bool:
+    def zerovel_determination(cls, gyro: np.ndarray, accel_i: np.ndarray, thresh: Tuple[float] = (1, 5, 2, 0.4)) -> bool:
         if gyro.shape[0] > 0 and accel_i.shape[0] > 0:
             gyro_mean = np.sqrt(np.sum(np.mean(gyro, axis=0)**2))
             gyro_std = np.mean(np.std(gyro, axis=0))
             accel_mean = np.sqrt(np.sum(np.mean(accel_i, axis=0)**2))
             accel_std = np.mean(np.std(accel_i, axis=0))
             # print(vel_mean, gyro_mean, gyro_std, accel_mean, accel_std)
-            if all([gyro_mean < thresh[0], gyro_std < thresh[1], accel_mean < thresh[2], accel_std < thresh[3]]):
+            if any([gyro_mean < thresh[0], gyro_std < thresh[1], accel_mean < thresh[2], accel_std < thresh[3]]):
                 return True
             else:
                 # print(f"gyro.mean={gyro_mean},.std={gyro_std};accel.mean={accel_mean},.std={accel_std}")
@@ -173,37 +177,79 @@ class IMUAlgorithm(object):
             return False
 
     @classmethod
-    def run_zerovel_detection(cls, accel_i, gyro, rpy, timestamp, window_sz: int = 5, **kwargs):
+    def zerovel_suppression(cls, zerovel: np.ndarray, cali_points: List[Dict[str, Any]]):
+        MINIMUM_INTERVAL = 100  # minimum continue zerovel internval (frames)
+        MAXIMUM_CONTINUE = 1  # definition of continuity
+        point_idx_accumulated = []
+        for idx, point in enumerate(cali_points):
+            if point_idx_accumulated != []:
+                if point['idx'] - cali_points[point_idx_accumulated[-1]]['idx'] <= MAXIMUM_CONTINUE:
+                    point_idx_accumulated.append(idx)
+                else:
+                    # Continuity not satisfied
+                    # point_idx_accumulated.append(idx)
+                    if len(point_idx_accumulated) < MINIMUM_INTERVAL:
+                        for point_idx in point_idx_accumulated:
+                            zerovel[cali_points[point_idx]['idx']] = 0
+                            cali_points[point_idx]['valid'] = False
+                        point_idx_accumulated = [idx]
+                    else:
+                        point_idx_accumulated = [idx]
+            else:
+                point_idx_accumulated.append(idx)
+
+        cali_points_suppressed = list(filter(lambda x: x['valid'], cali_points))
+
+        return zerovel, cali_points_suppressed
+
+    @classmethod
+    def run_zerovel_detection(cls, accel_i, gyro, rpy, timestamp, window_sz: int = 10, show: bool = False, **kwargs):
         # calc velocity, with zero velocity update policy
-        zero_vel = np.zeros_like(timestamp, dtype=np.int16)
+        zerovel = np.zeros_like(timestamp, dtype=np.int16)
         cali_points = []
 
-        # TODO: Filter acceleration
-        accel_i_filterd = cls.filter_bandpass(accel_i)
-        cls.visualize_3d(accel_i, timestamp,'accel_not_filtered')
-        cls.visualize_3d(accel_i_filterd, timestamp,'accel_filtered')
+        if show:
+            cls.visualize_3d(accel_i, timestamp, 'accel_not_filtered')
+            cls.visualize_3d(gyro, timestamp, 'gyro_not_filtered')
 
-        for idx in range(len(timestamp)):
-            if cls.zero_vel_determination(gyro[idx - window_sz:idx, :], accel_i_filterd[idx - window_sz:idx, :]):
-                zero_vel[idx] = 1
+        accel_i_filterd = cls.filter_bandpass(accel_i)
+        gyro_filterd = cls.filter_lowpass(gyro)
+        
+        if show:
+            cls.visualize_3d(accel_i_filterd, timestamp, 'accel_filtered')
+            cls.visualize_3d(gyro_filterd, timestamp, 'gyro_filtered')
+
+        for idx in range(1, len(timestamp) + 1):
+            if cls.zerovel_determination(gyro[idx - window_sz:idx, :], accel_i_filterd[idx - window_sz:idx, :]):
+                zerovel[idx - 1] = 1
                 cali_points.append({
-                    'idx': idx,
-                    'mes': accel_i[idx],
-                    'rpy': rpy[idx],
-                    'vel': np.array([0, 0, 0], dtype=np.float64)
+                    'idx': idx - 1,
+                    'mes': accel_i[idx - 1],
+                    'rpy': rpy[idx - 1],
+                    'vel': np.array([0, 0, 0], dtype=np.float64),
+                    'valid': True
                 })
-        zero_vel[-1] = 1
-        cali_points.append({
-                    'idx': len(zero_vel) - 1,
+
+        if cali_points != []:
+            cls.visualize_1d(zerovel, timestamp,'ZV')
+            zerovel, cali_points = cls.zerovel_suppression(zerovel, cali_points)
+            cls.visualize_1d(zerovel, timestamp,'ZV')
+
+            zerovel[-1] = 1
+            if cali_points[-1]['idx'] != len(zerovel) - 1:
+                cali_points.append({
+                    'idx': len(zerovel) - 1,
                     'mes': accel_i[-1],
                     'rpy': rpy[-1],
-                    'vel': np.array([0, 0, 0], dtype=np.float64)
+                    'vel': np.array([0, 0, 0], dtype=np.float64),
+                    'valid': True
                 })
-        return {'zero_vel': zero_vel, 'cali_points': cali_points}
+
+        return {'zerovel': zerovel, 'cali_points': cali_points}
 
     @classmethod
     def get_accel_compensation(cls, cali_points, gravity_i,
-                           **kwargs) -> Tuple[Union[None, np.array], Union[None, List[Dict[str, Any]]]]:
+                               **kwargs) -> Tuple[Union[None, np.array], Union[None, List[Dict[str, Any]]]]:
         if (len(cali_points) <= 0):
             return None
 
@@ -228,7 +274,7 @@ class IMUAlgorithm(object):
             vel_offset[last_point['idx']:point['idx']] = np.linspace(vel[last_point['idx']] - last_point['vel'],
                                                                      vel[point['idx']] - point['vel'],
                                                                      point['idx'] - last_point['idx'])
-                                                                    
+
             last_point = point
 
         return vel_offset
@@ -241,6 +287,7 @@ class IMUAlgorithm(object):
         for i in range(len(timestamp) - 1):
             # Measured acceleration is inverse of actural acceleration
             vel[i + 1] = vel[i] - 0.5 * (accel_w[i + 1] + accel_w[i]) * (timestamp[i + 1] - timestamp[i])
+        # vel[-1] = np.array([0,0,0], dtype=vel.dtype)
         return {'vel': vel}
 
     @classmethod
@@ -264,45 +311,32 @@ class IMUAlgorithm(object):
 
         # Calibrate accel, get accel_w and gravity_i
         # ctx['accel_i'] = cls.filter_bandpass(ctx['accel_i'])
-        
-        ctx = {**ctx, **cls.substract_gravity(ctx['accel_i'], 
-                                              ctx['rpy'], 
-                                              ctx['timestamp'], 
-                                              ctx['pose_mat'])}
 
-        ctx['accel_w'] = cls.filter_bandpass(ctx['accel_w'])
+        ctx = {**ctx, **cls.substract_gravity(ctx['accel_i'], ctx['rpy'], ctx['timestamp'], ctx['pose_mat'])}
 
-        # get zero_vel vector and cali_points
-        ctx = {**ctx, **cls.run_zerovel_detection(ctx['accel_i'], 
-                                                  ctx['gyro'], 
-                                                  ctx['rpy'],
-                                                  ctx['timestamp'])}
+        ctx['accel_w'] = cls.filter_lowpass(ctx['accel_w'])
 
-        accel_i_bias = cls.get_accel_compensation(ctx['cali_points'], 
-                                                  ctx['gravity_i'])
+        # get zerovel vector and cali_points
+        ctx = {**ctx, **cls.run_zerovel_detection(ctx['accel_i'], ctx['gyro'], ctx['rpy'], ctx['timestamp'], show=True)}
+
+        accel_i_bias = cls.get_accel_compensation(ctx['cali_points'], ctx['gravity_i'])
         if accel_i_bias is not None:
             ctx['accel_i'] = ctx['accel_i'] - accel_i_bias
-            # Re-run steps using the calibrated accel
-            ctx.update(**cls.substract_gravity(ctx['accel_i'], 
-                                              ctx['rpy'], 
-                                              ctx['timestamp'], 
-                                              ctx['pose_mat']))
-            ctx['accel_w'] = cls.filter_bandpass(ctx['accel_w'])
-            
-            ctx = {**ctx, **cls.run_zerovel_detection(ctx['accel_i'], 
-                                                  ctx['gyro'], 
-                                                  ctx['rpy'],
-                                                  ctx['timestamp'])}
 
-            # ctx['accel_w'] = cls.filter_bandpass(ctx['accel_w'])
+            # Re-run steps using the calibrated accel
+            ctx.update(**cls.substract_gravity(ctx['accel_i'], ctx['rpy'], ctx['timestamp'], ctx['pose_mat']))
+
+            ctx['accel_w'] = cls.filter_lowpass(ctx['accel_w'])
+
+            ctx = {**ctx, **cls.run_zerovel_detection(ctx['accel_i'], ctx['gyro'], ctx['rpy'], ctx['timestamp'])}
+
             ctx = {**ctx, **cls.run_vel_construction(ctx['accel_w'], ctx['timestamp'])}
-            vel_offset = cls.get_vel_compensation(ctx['vel'], 
-                                                  ctx['cali_points'])
-            cls.visualize_3d(ctx['vel'] , ctx['timestamp'],'vel_not_compensated')
+            vel_offset = cls.get_vel_compensation(ctx['vel'], ctx['cali_points'])
+            cls.visualize_3d(ctx['vel'], ctx['timestamp'], 'vel_not_compensated')
             ctx['vel'] -= vel_offset
-            cls.visualize_3d(ctx['vel'] , ctx['timestamp'],'vel_compensated')
+            cls.visualize_3d(ctx['vel'], ctx['timestamp'], 'vel_compensated')
             ctx = {**ctx, **cls.run_pos_construction(ctx['vel'], ctx['timestamp'])}
-            
+
         else:
             ctx = {**ctx, **cls.run_vel_construction(ctx['accel_w'], ctx['timestamp'])}
             ctx = {**ctx, **cls.run_pos_construction(ctx['vel'], ctx['timestamp'])}
