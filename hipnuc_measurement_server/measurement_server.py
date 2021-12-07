@@ -139,7 +139,7 @@ class MeasurementServer(object):
         if 'start' in cmd['type']:
             if len(self.processes) == 0:
                 measurement_filename = cmd['measurement_filename'] if 'measurement_filename' in cmd.keys(
-                ) else 'imu_mem_' + datetime.datetime.now().strftime("%Y-%m-%d_%H%M%S.csv")
+                ) else 'imu_mem_' + datetime.datetime.now().strftime("%Y-%m-%d_%H%M%S.csv") # TODO: Send measurement name via PIPE api
 
                 proc = mp.Process(None, record_csv, record_csv.__name__, (measurement_filename, self.config, ))
                 proc.start()
