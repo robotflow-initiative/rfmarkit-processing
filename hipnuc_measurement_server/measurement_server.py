@@ -7,6 +7,7 @@ import select
 import signal
 from json.decoder import JSONDecodeError
 from typing import Dict, List
+import json
 
 from hipnuc import hipnuc_module
 
