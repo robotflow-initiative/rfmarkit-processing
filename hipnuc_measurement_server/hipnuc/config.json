@@ -1,0 +1,16 @@
+{
+  "port": "/dev/cu.usbserial-124440",
+  "baudrate": 921600,
+  "report_datatype": {
+    "imusol": true,
+    "gwsol": false,   
+    "id": true,
+    "acc": false,
+    "gyr": false,
+    "mag": false,
+    "euler": false,
+    "quat": false,
+    "imusol_raw": true,
+    "gwsol_raw": true
+  }
+}

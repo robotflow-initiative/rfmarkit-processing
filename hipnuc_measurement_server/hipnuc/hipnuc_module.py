@@ -6,10 +6,11 @@ import sys
 #this specify path of pyserial
 #sys.path.append("/usr/lib/python3/dist-packages")
 import threading
+from typing import Type
 import serial
 import json
 from queue import Queue
-from hipnuc_protocol import *
+from .hipnuc_protocol import *
 import time
 import os
 
@@ -27,7 +28,7 @@ class hipnuc_module(object):
         json配置文件的路徑.
 
     """
-    def __init__(self, path_configjson=None):
+    def __init__(self, configuration=None):
 
         def serialthread():
             while self.serthread_alive:
@@ -64,13 +65,21 @@ class hipnuc_module(object):
                 time.sleep(0.001)
 
         # 解析json配置文件
-        if path_configjson != None:
-            # 打開配置文件
-            config_json = open(path_configjson, 'r', encoding='utf-8')
-            self.config = json.load(config_json)
-            # 關閉配置文件
-            config_json.close()
-            # 進行配置
+        if configuration != None:
+            if isinstance(configuration, str):
+                # 打開配置文件
+                config_json = open(configuration, 'r', encoding='utf-8')
+                self.config = json.load(config_json)
+                # 關閉配置文件
+                config_json.close()
+                # 進行配置
+                
+            elif isinstance(configuration, dict):
+                self.config = configuration
+            
+            else:
+                raise TypeError('Wrong argument type')
+
             portx = self.config["port"]
             bps = self.config["baudrate"]
         else:
@@ -192,8 +201,34 @@ class hipnuc_module(object):
         f.write(csv_row_value)
         f.close()
         self.frame_counter+=1
-
         #print ('writed %s:%d'%(filename,self.frame_counter))
+    
+    def write2csv_handle(self, data, f):
+     
+        # f = open(filename,'a')
+
+        if self.frame_counter==0:
+            csv_row_name="frame,"
+            for key, data_list in data.items():
+                for axis_dic in data_list:
+                        for axis, value in axis_dic.items():
+                            
+                            csv_row_name+=key+axis+','
+            csv_row_name+='\n'
+            f.write(csv_row_name)
+            self.frame_counter+=1
+        
+        
+        csv_row_value="%d,"%(self.frame_counter)
+        for data_list in data.values():
+            for axis_dic in data_list:
+                for axis, value in axis_dic.items():
+                    csv_row_value+=str(value)+','
+
+        csv_row_value+='\n'
+        
+        f.write(csv_row_value)
+        self.frame_counter+=1
 
 
             
