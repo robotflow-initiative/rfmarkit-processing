@@ -17,13 +17,13 @@ MAX_LISTEN = 8
 POLL_READ = select.POLLIN | select.POLLPRI | select.POLLHUP | select.POLLERR
 
 
-def record_csv(measurement_filename: str):
+def record_csv(measurement_filename: str, config: Dict):
     """Start recording. This function is the core.
 
     Args:
         measurement_filename (str): Filename of CSV formatted recording
     """
-    IMU: hipnuc_module = hipnuc_module(CONFIG)
+    IMU: hipnuc_module = hipnuc_module(config)
     logging.info(f"Started measurement at: {datetime.datetime.utcnow().timestamp()}")
     logging.info("Press Ctrl-C to terminate.")
     logging.info(f'Saving measurement to {measurement_filename}')
@@ -118,19 +118,22 @@ class MeasurementServer(object):
         logging.debug(f"Received command at: {datetime.datetime.utcnow().timestamp()}")
 
         if 'start' in cmd['type']:
-            # TODO: Change format of command
-            measurement_filename = cmd['measurement_filename'] if 'measurement_filename' in cmd.keys(
-            ) else 'imu_mem_' + datetime.datetime.now().strftime("%Y-%m-%d_%H%M%S.csv")
+            if len(self.processes) == 0:
+                measurement_filename = cmd['measurement_filename'] if 'measurement_filename' in cmd.keys(
+                ) else 'imu_mem_' + datetime.datetime.now().strftime("%Y-%m-%d_%H%M%S.csv")
 
-            proc = mp.Process(None, record_csv, record_csv.__name__, (measurement_filename, ))
-            proc.start()
-            self.processes.append(proc)
+                proc = mp.Process(None, record_csv, record_csv.__name__, (measurement_filename, self.config, ))
+                proc.start()
+                self.processes.append(proc)
 
-            self.make_response(status="OK")
+                self.make_response(status="OK")
+            else:
+                logging.error("A process is already running")
+                self.make_response(status="FAIL", msg="A process is already running")
 
         elif 'stop' in cmd['type']:
             self.join_all_subprocess()
-            self.make_response(status="FAIL")
+            self.make_response(status="OK")
 
         elif 'quit' in cmd['type']:
             self.join_all_subprocess()
@@ -152,7 +155,7 @@ class MeasurementServer(object):
 
                             try:
                                 cmd: Dict = json.loads(str(data, 'utf-8'))
-                                logging.info(f"\nGot incoming command{cmd}")
+                                logging.info(f"Got incoming command{cmd}")
                                 self.exec(cmd)
                             except JSONDecodeError:
                                 logging.warn(f"Invalid command format:\n{data}")
@@ -190,6 +193,7 @@ if __name__ == '__main__':
             "gwsol_raw": True
         }
     }  # Default Configuration of IMU
+    # TODO: Add support for multi-IMU configuration
 
     # When -l is detected, the script will launch a server
     if args.listen:

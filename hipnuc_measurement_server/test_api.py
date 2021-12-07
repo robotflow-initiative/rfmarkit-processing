@@ -41,7 +41,7 @@ def gather(pipe: str) -> Dict:
                 data = f.readline()
                 cmd = json.loads(data)
         except JSONDecodeError:
-            logging.warn(f"Wrong format")
+            logging.warning(f"Wrong format")
         print(f"Unix timestamp: {datetime.datetime.utcnow().timestamp()}")
         f.close()
     return cmd
@@ -56,7 +56,10 @@ if __name__ == '__main__':
     call('/tmp/measurement_pipe_in', start_cmd)
     print(gather('/tmp/measurement_pipe_out'))
     time.sleep(5)
-    
+    # Start measurement
+    call('/tmp/measurement_pipe_in', start_cmd)
+    print(gather('/tmp/measurement_pipe_out'))
+    time.sleep(2)
 
     # Stop measurement
     call('/tmp/measurement_pipe_in', stop_cmd)
