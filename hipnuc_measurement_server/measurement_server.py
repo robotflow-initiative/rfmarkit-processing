@@ -22,6 +22,25 @@ def record_csv(measurement_filename: str, config: Dict):
 
     Args:
         measurement_filename (str): Filename of CSV formatted recording
+        config: IMU configuration
+                e.g.:
+                {
+                    "port": /dev/cu.usbserial-124440,
+                    "baudrate": 921600,
+                    "report_datatype": {
+                        "imusol": True,
+                        "gwsol": False,
+                        "id": True,
+                        "acc": False,
+                        "gyr": False,
+                        "mag": False,
+                        "euler": False,
+                        "quat": False,
+                        "imusol_raw": True,
+                        "gwsol_raw": True
+                    }
+                } 
+
     """
     IMU: hipnuc_module = hipnuc_module(config)
     logging.info(f"Started measurement at: {datetime.datetime.utcnow().timestamp()}")
@@ -194,6 +213,7 @@ if __name__ == '__main__':
         }
     }  # Default Configuration of IMU
     # TODO: Add support for multi-IMU configuration
+    # e.g.: Send IMU config via PIPE api
 
     # When -l is detected, the script will launch a server
     if args.listen:
