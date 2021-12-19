@@ -1,3 +1,6 @@
 [submodule "TLIO"]
 	path = TLIO
 	url = git@github.com:CathIAS/TLIO.git
+[submodule "liegroups"]
+	path = liegroups
+	url = https://github.com/utiasSTARS/liegroups
