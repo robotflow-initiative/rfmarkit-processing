@@ -1,3 +1,4 @@
+import json
 from IMUDataset import IMUDatasetCollection
 from algorithm import IMUAlgorithm
 import numpy as np
@@ -104,28 +105,31 @@ def interp_data(imu_data, robot_data):
     robot_rot_interp = IMUAlgorithm.quat_to_pose_mat_np(robot_quat_interp)
 
     return {
-        'interp': {
-            'imu': {
-                'acc': imu_acc_interp,
-                'gyro': imu_gyro_interp,
-                'mag': imu_mag_interp,
-                'euler': imu_euler_interp,
-                'quat': imu_quat_interp,
-                'rot': imu_rot_interp,
-            },
-            'robot': {
-                'pos': robot_pos_interp,
-                'quat': robot_quat_interp,
-                'rot': robot_rot_interp,
-            }
-        }
+        'imu': {
+            'ts': global_ts,
+            'acc': imu_acc_interp,
+            'gyro': imu_gyro_interp,
+            'mag': imu_mag_interp,
+            'euler': imu_euler_interp,
+            'quat': imu_quat_interp,
+            'rot': imu_rot_interp,
+        },
+        'robot': {
+            'ts': global_ts,
+            'pos': robot_pos_interp,
+            'quat': robot_quat_interp,
+            'rot': robot_rot_interp,
+        },
+        'len': len(global_ts)
     }
+
 
 def work(data_collection, index, output_dir):
     res = from_collection_entry_to_np(data_collection, index)
     res_interp = interp_data(res['imu'], res['robot'])
     with open(os.path.join(output_dir, 'record_{0:06}.pkl'.format(index)), 'wb') as f:
         pickle.dump(res_interp, f)
+
 
 if __name__ == '__main__':
     data_collection = IMUDatasetCollection('./data_raw',
@@ -134,14 +138,33 @@ if __name__ == '__main__':
                                            label_pattern=['cartesianPos_{}.csv'],
                                            stimulis_pattern=["imu_{}.csv"])
     output_dir = './data_interp'
+    WINDOW_SZ = 200
 
-    from multiprocessing import Pool
-    pool = Pool(8)
-    meta_fp = open(os.path.join(output_dir, 'meta.txt'), 'w')
+    record_index_map = []
+    record_index_max: int = 0
+    record_filenames = []
+
     with tqdm.tqdm(range(len(data_collection))) as pbar:
         for index in range(1, 1 + len(data_collection)):
-            pool.apply_async(func=work, args=(data_collection, index, output_dir,), callback=lambda res: pbar.update(), error_callback=lambda err: print(err))
-            meta_fp.write('record_{0:06}.pkl\n'.format(index))
-        pool.close()
-        pool.join()
-    meta_fp.close()
+            res = from_collection_entry_to_np(data_collection, index) # 读取数据，csv->numpy
+            res_interp = interp_data(res['imu'], res['robot']) # 差值
+            res_filename = 'record_{0:06}.pkl'.format(index) # 计算文件名
+            with open(os.path.join(output_dir, res_filename), 'wb') as f:
+                pickle.dump(res_interp, f) # 保存成pickle
+
+            res_dataset_len = res_interp['len'] - WINDOW_SZ + 1 # 数据集的长度等于记录数量减去窗长加一
+            record_index_map.extend([(record_index_max + local_index, res_filename, local_index)
+                                for local_index in range(res_dataset_len)]) # 建立index_map，将单调增的序号映射到每一份独立记录和记录本地的偏移
+            record_index_max += res_dataset_len # 更新最大记录序号的值
+
+            record_filenames.append(res_filename)
+            pbar.update()
+
+    with open(os.path.join(output_dir, 'meta.json'), 'w+') as meta_fp:
+        meta = {
+            'window_sz': WINDOW_SZ,
+            'len': len(record_index_map),
+            'filenames': record_filenames,
+            'index_map': record_index_map,
+        }
+        json.dump(meta, meta_fp, indent=4)
