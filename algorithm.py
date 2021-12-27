@@ -143,7 +143,7 @@ class IMUAlgorithm(object):
     @classmethod
     def filter_middle(cls, data: np.ndarray, windows_sz: int = 5):
         res = np.copy(data)
-        for idx in range(len(data) - windows_sz):
+        for idx in range(len(data) - windows_sz + 1):
             res[idx:idx + windows_sz] = np.repeat(np.expand_dims(np.mean(res[idx:idx + windows_sz], axis=0), axis=0),
                                                   windows_sz,
                                                   axis=0)

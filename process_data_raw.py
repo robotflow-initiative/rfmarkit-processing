@@ -25,6 +25,9 @@ def from_collection_entry_to_np(data_collection, index):
     robot_ts = robot_np[:, 1].astype(np.float64) * 1e-3
     robot_ts -= robot_ts[0]
     robot_pos = robot_np[:, 14:17].astype(np.float64)
+    robot_vel = np.zeros_like(robot_pos)
+    robot_vel[1:] = (robot_pos[1:] - robot_pos[:-1]) * 1e3
+    robot_vel = IMUAlgorithm.filter_middle(robot_vel, 200)
     robot_rot = np.stack([robot_np[:, 2:5], robot_np[:, 6:9], robot_np[:, 10:13]], axis=-1)
     robot_quat = IMUAlgorithm.pose_mat_to_quat_np(robot_rot)
 
@@ -40,6 +43,7 @@ def from_collection_entry_to_np(data_collection, index):
         },
         'robot': {
             'ts': robot_ts,
+            'vel': robot_vel,
             'pos': robot_pos,
             'quat': robot_quat,
             'rot': robot_rot,
@@ -95,6 +99,13 @@ def interp_data(imu_data, robot_data):
         np.interp(global_ts, robot_data['ts'], robot_data['pos'][:, 2]),
     ],
                                 axis=-1)
+    robot_vel_interp = np.stack([
+        np.interp(global_ts, robot_data['ts'], robot_data['vel'][:, 0]),
+        np.interp(global_ts, robot_data['ts'], robot_data['vel'][:, 1]),
+        np.interp(global_ts, robot_data['ts'], robot_data['vel'][:, 2]),
+    ],
+                                axis=-1)
+
     robot_quat_interp = np.stack([
         np.interp(global_ts, robot_data['ts'], robot_data['quat'][:, 0]),
         np.interp(global_ts, robot_data['ts'], robot_data['quat'][:, 1]),
@@ -117,6 +128,7 @@ def interp_data(imu_data, robot_data):
         'robot': {
             'ts': global_ts,
             'pos': robot_pos_interp,
+            'vel': robot_vel_interp,
             'quat': robot_quat_interp,
             'rot': robot_rot_interp,
         },
