@@ -56,7 +56,7 @@ class TILOModel(pl.LightningModule):
         return {'val_loss': loss}
 
     def validation_epoch_end(self, outputs):
-        avg_loss = torch.stack([x['val_loss'] for x in outputs]).mean()
+        avg_loss = torch.tensor([x['val_loss'].mean() for x in outputs]).mean()
         self.log('val_avg_loss', avg_loss)
         return {'val_loss': avg_loss}
 
@@ -100,10 +100,33 @@ if __name__ == '__main__':
 
     logger = pl_logger.TensorBoardLogger(save_dir=MODEL_CONFIG['log_dir'])
 
-    trainer = pl.Trainer(max_epochs=20,
+    checkpoint_callback = pl.callbacks.ModelCheckpoint(dirpath="checkpoints",
+                                                       filename="{epoch}-{val_loss:.4f}",
+                                                       monitor='val_loss',
+                                                       save_last=True,
+                                                       save_top_k=20,
+                                                       mode='min',
+                                                       save_weights_only=False,
+                                                       every_n_epochs=1,
+                                                       save_on_train_epoch_end=True)
+
+    trainer = pl.Trainer(gpus=[0],
+                         max_epochs=25,
+                         callbacks=[checkpoint_callback],
+                         checkpoint_callback=True,
                          progress_bar_refresh_rate=10,
                          default_root_dir=MODEL_CONFIG['check_point_dir'],
                          logger=logger)
+
+    checkpoint_callback = pl.callbacks.ModelCheckpoint(dirpath="checkpoints",
+                                                       filename="{epoch}-{val_loss:.4f}",
+                                                       monitor='val_loss',
+                                                       save_last=True,
+                                                       save_top_k=20,
+                                                       mode='min',
+                                                       save_weights_only=False,
+                                                       every_n_epochs=1,
+                                                       save_on_train_epoch_end=True)
 
     tilo = TILOModel(MODEL_CONFIG)
     trainer.fit(tilo, train_loader, val_loader)
