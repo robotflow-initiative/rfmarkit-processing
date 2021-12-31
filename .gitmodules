@@ -3,4 +3,4 @@
 	url = git@github.com:CathIAS/TLIO.git
 [submodule "liegroups"]
 	path = liegroups
-	url = https://github.com/utiasSTARS/liegroups
+	url = git@github.com:utiasSTARS/liegroups.git

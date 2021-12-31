@@ -3,6 +3,9 @@
 data_raw
 data_datasets
 data_interp
+log
 
+*.ckpt
 *.pyc
 *.DS_Store
+events.*
