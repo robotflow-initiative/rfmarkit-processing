@@ -8,7 +8,8 @@ import os
 
 
 def from_collection_entry_to_np(data_collection, index):
-    imu_df = data_collection[index]['stimulis'][0]
+    data_entry = data_collection[index]
+    imu_df = data_entry['imu']
     imu_np = imu_df.to_numpy()
     imu_ts = imu_np[:, 2].astype(np.float64)
     imu_ts -= imu_ts[0]
@@ -19,17 +20,30 @@ def from_collection_entry_to_np(data_collection, index):
     imu_quat = imu_np[:, 15:19].astype(np.float64)
     imu_rot = IMUAlgorithm.quat_to_pose_mat_np(imu_quat)
 
-    robot_df = data_collection[index]['label'][0]
-    robot_np = robot_df.to_numpy()
+    robot_pos_df = data_entry['pos']
+    robot_pos_np = robot_pos_df.to_numpy()
     # @remark Resolution 1ms
-    robot_ts = robot_np[:, 1].astype(np.float64) * 1e-3
+    robot_ts = robot_pos_np[:, 1].astype(np.float64) * 1e-3
     robot_ts -= robot_ts[0]
-    robot_pos = robot_np[:, 14:17].astype(np.float64)
-    robot_vel = np.zeros_like(robot_pos)
-    robot_vel[1:] = (robot_pos[1:] - robot_pos[:-1]) * 1e3
-    robot_vel = IMUAlgorithm.filter_middle(robot_vel, 200)
-    robot_rot = np.stack([robot_np[:, 2:5], robot_np[:, 6:9], robot_np[:, 10:13]], axis=-1)
+    robot_pos = robot_pos_np[:, 14:17].astype(np.float64)
+    robot_rot = np.stack([robot_pos_np[:, 2:5], robot_pos_np[:, 6:9], robot_pos_np[:, 10:13]], axis=-1)
     robot_quat = IMUAlgorithm.pose_mat_to_quat_np(robot_rot)
+    # Diff method
+    # robot_vel = np.zeros_like(robot_pos)
+    # robot_vel[1:] = (robot_pos[1:] - robot_pos[:-1]) * 1e3
+    # robot_vel = IMUAlgorithm.filter_middle(robot_vel, 200)
+
+    robot_vel = data_entry['vel']
+    assert len(robot_vel) == len(robot_pos)
+    robot_vel_np = robot_vel.to_numpy()
+    robot_vel = robot_vel_np[:, 2:5].astype(np.float64)
+    robot_vel_ang = robot_vel_np[:, 5:8].astype(np.float64)
+
+    robot_acc = data_entry['acc']
+    assert len(robot_acc) == len(robot_pos)
+    robot_acc_np = robot_acc.to_numpy()
+    robot_acc = robot_acc_np[:, 2:5].astype(np.float64)
+    robot_acc_ang = robot_acc_np[:, 5:8].astype(np.float64)
 
     return {
         'imu': {
@@ -44,6 +58,9 @@ def from_collection_entry_to_np(data_collection, index):
         'robot': {
             'ts': robot_ts,
             'vel': robot_vel,
+            'vel_ang': robot_vel_ang,
+            'acc': robot_acc,
+            'acc_ang': robot_acc_ang,
             'pos': robot_pos,
             'quat': robot_quat,
             'rot': robot_rot,
@@ -65,32 +82,32 @@ def interp_data(imu_data, robot_data):
         np.interp(global_ts, imu_data['ts'], imu_data['acc'][:, 1]),
         np.interp(global_ts, imu_data['ts'], imu_data['acc'][:, 2])
     ],
-                              axis=-1)
+        axis=-1)
     imu_gyro_interp = np.stack([
         np.interp(global_ts, imu_data['ts'], imu_data['gyro'][:, 0]),
         np.interp(global_ts, imu_data['ts'], imu_data['gyro'][:, 1]),
         np.interp(global_ts, imu_data['ts'], imu_data['gyro'][:, 2])
     ],
-                               axis=-1)
+        axis=-1)
     imu_mag_interp = np.stack([
         np.interp(global_ts, imu_data['ts'], imu_data['mag'][:, 0]),
         np.interp(global_ts, imu_data['ts'], imu_data['mag'][:, 1]),
         np.interp(global_ts, imu_data['ts'], imu_data['mag'][:, 2])
     ],
-                              axis=-1)
+        axis=-1)
     imu_euler_interp = np.stack([
         np.interp(global_ts, imu_data['ts'], imu_data['euler'][:, 0]),
         np.interp(global_ts, imu_data['ts'], imu_data['euler'][:, 1]),
         np.interp(global_ts, imu_data['ts'], imu_data['euler'][:, 2])
     ],
-                                axis=-1)
+        axis=-1)
     imu_quat_interp = np.stack([
         np.interp(global_ts, imu_data['ts'], imu_data['quat'][:, 0]),
         np.interp(global_ts, imu_data['ts'], imu_data['quat'][:, 1]),
         np.interp(global_ts, imu_data['ts'], imu_data['quat'][:, 2]),
         np.interp(global_ts, imu_data['ts'], imu_data['quat'][:, 3]),
     ],
-                               axis=-1)
+        axis=-1)
     imu_rot_interp = IMUAlgorithm.quat_to_pose_mat_np(imu_quat_interp)
 
     robot_pos_interp = np.stack([
@@ -98,13 +115,13 @@ def interp_data(imu_data, robot_data):
         np.interp(global_ts, robot_data['ts'], robot_data['pos'][:, 1]),
         np.interp(global_ts, robot_data['ts'], robot_data['pos'][:, 2]),
     ],
-                                axis=-1)
+        axis=-1)
     robot_vel_interp = np.stack([
         np.interp(global_ts, robot_data['ts'], robot_data['vel'][:, 0]),
         np.interp(global_ts, robot_data['ts'], robot_data['vel'][:, 1]),
         np.interp(global_ts, robot_data['ts'], robot_data['vel'][:, 2]),
     ],
-                                axis=-1)
+        axis=-1)
 
     robot_quat_interp = np.stack([
         np.interp(global_ts, robot_data['ts'], robot_data['quat'][:, 0]),
@@ -112,7 +129,7 @@ def interp_data(imu_data, robot_data):
         np.interp(global_ts, robot_data['ts'], robot_data['quat'][:, 2]),
         np.interp(global_ts, robot_data['ts'], robot_data['quat'][:, 3]),
     ],
-                                 axis=-1)
+        axis=-1)
     robot_rot_interp = IMUAlgorithm.quat_to_pose_mat_np(robot_quat_interp)
 
     return {
@@ -144,12 +161,12 @@ def work(data_collection, index, output_dir):
 
 
 if __name__ == '__main__':
-    data_collection = IMUDatasetCollection('./data_raw',
-                                           label_subpath='Pos',
-                                           stimulis_subpath='IMU',
-                                           label_pattern=['cartesianPos_{}.csv'],
-                                           stimulis_pattern=["imu_{}.csv"])
-    output_dir = './data_interp'
+    data_collection = IMUDatasetCollection('./data_raw_py900_1000',
+                                           pos_subpath='Pos',
+                                           imu_subpath='IMU',
+                                           vel_subpath='Vec',
+                                           acc_subpath='Aec')
+    output_dir = './data_interp_py900_1000'
     WINDOW_SZ = 200
 
     record_index_map = []
@@ -157,17 +174,18 @@ if __name__ == '__main__':
     record_filenames = []
 
     with tqdm.tqdm(range(len(data_collection))) as pbar:
-        for index in range(1, 1 + len(data_collection)):
-            res = from_collection_entry_to_np(data_collection, index) # 读取数据，csv->numpy
-            res_interp = interp_data(res['imu'], res['robot']) # 差值
-            res_filename = 'record_{0:06}.pkl'.format(index) # 计算文件名
+        # for index in range(1, 1 + len(data_collection)):
+        for index in range(901, 901 + len(data_collection)):
+            res = from_collection_entry_to_np(data_collection, index)  # 读取数据，csv->numpy
+            res_interp = interp_data(res['imu'], res['robot'])  # 差值
+            res_filename = 'record_{0:06}.pkl'.format(index)  # 计算文件名
             with open(os.path.join(output_dir, res_filename), 'wb') as f:
-                pickle.dump(res_interp, f) # 保存成pickle
+                pickle.dump(res_interp, f)  # 保存成pickle
 
-            res_dataset_len = res_interp['len'] - WINDOW_SZ + 1 # 数据集的长度等于记录数量减去窗长加一
+            res_dataset_len = res_interp['len'] - WINDOW_SZ + 1  # 数据集的长度等于记录数量减去窗长加一
             record_index_map.extend([(record_index_max + local_index, res_filename, local_index)
-                                for local_index in range(res_dataset_len)]) # 建立index_map，将单调增的序号映射到每一份独立记录和记录本地的偏移
-            record_index_max += res_dataset_len # 更新最大记录序号的值
+                                     for local_index in range(res_dataset_len)])  # 建立index_map，将单调增的序号映射到每一份独立记录和记录本地的偏移
+            record_index_max += res_dataset_len  # 更新最大记录序号的值
 
             record_filenames.append(res_filename)
             pbar.update()

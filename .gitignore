@@ -1,8 +1,8 @@
 .vscode
 
-data_raw
-data_datasets
-data_interp
+data_raw*
+data_datasets*
+data_interp*
 
 *.pyc
 *.DS_Store
