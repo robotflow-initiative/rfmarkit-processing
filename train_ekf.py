@@ -77,10 +77,11 @@ if __name__ == '__main__':
         'lr': 1e-4,
         'check_point_dir': './checkpoint',
         'log_dir': './log',
-        'num_workers': 1
+        'num_workers': 1,
+        'target': 'vel'
     }
 
-    dataset = IMUDataset('./data_interp', features=MODEL_CONFIG['features'])
+    dataset = IMUDataset('./data_interp', features=MODEL_CONFIG['features'], target=MODEL_CONFIG['target'])
     train_len = int(len(dataset) * 0.001)
     val_len = int(len(dataset) * 0.001)
     test_len = len(dataset) - val_len - train_len

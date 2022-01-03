@@ -2,7 +2,7 @@ from threading import local
 from typing import List, Tuple
 from torch.utils.data import Dataset
 import re
-from typing import Tuple
+from typing import Dict
 import pandas as pd
 import os
 import glob
@@ -13,63 +13,78 @@ import torch
 
 
 class IMUDatasetCollection:
-    LABEL_SUBPATH = 'label'
-    STIMULIS_SUBPATH = 'stimulis'
-    LABEL_PATTERN = ["cartesianPos_{}.csv", "cartesianVec_{}.csv", "cartesianAec_{}.csv"]
-    STIMULIS_PATTERN = ["imu_{}.csv"]
+    IMU_SUBPATH = 'stimulis'
+    POS_SUBPATH = 'pos'
+    VEL_SUBPATH = 'vel'
+    ACC_SUBPATH = 'acc'
+
+    IMU_PATTERN = "imu_{}.csv"
+    POS_PATTERN = "cartesianPos_{}.csv"
+    VEL_PATTERN = "cartesianVec_{}.csv"
+    ACC_PATTERN = "cartesianAec_{}.csv"
 
     def __init__(self,
                  path_to_data,
-                 label_subpath: str = 'label',
-                 stimulis_subpath: str = 'stimulis',
-                 label_pattern: List[str] = ["cartesianPos_{}.csv", "cartesianVec_{}.csv", "cartesianAec_{}.csv"],
-                 stimulis_pattern: List[str] = ["imu_{}.csv"]) -> None:
+                 imu_subpath: str = 'imu',
+                 pos_subpath: str = 'pos',
+                 vel_subpath: str = 'vel',
+                 acc_subpath: str = 'acc',
+                 imu_pattern: str = "imu_{}.csv",
+                 pos_pattern: str = "cartesianPos_{}.csv",
+                 vel_pattern: str = "cartesianVec_{}.csv",
+                 acc_pattern: str = "cartesianAec_{}.csv"
+                 ) -> None:
         self.path_to_data = path_to_data
-        self.LABEL_PATTERN = label_pattern
-        self.STIMULIS_PATTERN = stimulis_pattern
-        self.LABEL_SUBPATH = label_subpath
-        self.STIMULIS_SUBPATH = stimulis_subpath
+        self.POS_PATTERN = pos_pattern
+        self.IMU_PATTERN = imu_pattern
+        self.VEL_PATTERN = vel_pattern
+        self.ACC_PATTERN = acc_pattern
 
-        self.label_list = list(
+        self.POS_SUBPATH = pos_subpath
+        self.IMU_SUBPATH = imu_subpath
+        self.VEL_SUBPATH = vel_subpath
+        self.ACC_SUBPATH = acc_subpath
+
+        self.imu_list = list(
             zip(*[
-                glob.glob(os.path.join(self.path_to_data, self.LABEL_SUBPATH, pattern.format('*')))
-                for pattern in self.LABEL_PATTERN
+                glob.glob(os.path.join(self.path_to_data, self.IMU_SUBPATH, self.IMU_PATTERN.format('*')))
             ]))
-        self.stimulis_list = list(
+        self.pos_list = list(
             zip(*[
-                glob.glob(os.path.join(self.path_to_data, self.STIMULIS_SUBPATH, pattern.format('*')))
-                for pattern in self.STIMULIS_PATTERN
+                glob.glob(os.path.join(self.path_to_data, self.POS_SUBPATH, self.POS_PATTERN.format('*')))
+            ]))
+        self.vel_list = list(
+            zip(*[
+                glob.glob(os.path.join(self.path_to_data, self.VEL_SUBPATH, self.VEL_PATTERN.format('*')))
+            ]))
+        self.acc_list = list(
+            zip(*[
+                glob.glob(os.path.join(self.path_to_data, self.ACC_SUBPATH, self.ACC_PATTERN.format('*')))
             ]))
 
-        self.length = sum([
-            len(glob.glob(os.path.join(self.path_to_data, self.STIMULIS_SUBPATH, pattern.format('*'))))
-            for pattern in stimulis_pattern
-        ])
+        self.length = len(self.imu_list)
 
     def __len__(self):
         return self.length
 
-    def __getitem__(self, index) -> Tuple:
+    def __getitem__(self, index) -> Dict:
         return {
-            'label': [
-                pd.read_csv(item) for item in map(
-                    lambda x: os.path.join(self.path_to_data, self.LABEL_SUBPATH, x.format(index)), self.LABEL_PATTERN)
-            ],
-            'stimulis': [
-                pd.read_csv(item) for item in map(
-                    lambda x: os.path.join(self.path_to_data, self.STIMULIS_SUBPATH, x.format(index)), self.STIMULIS_PATTERN)
-            ]
+            'imu': pd.read_csv(os.path.join(self.path_to_data, self.IMU_SUBPATH, self.IMU_PATTERN.format(index))),
+            'pos': pd.read_csv(os.path.join(self.path_to_data, self.POS_SUBPATH, self.POS_PATTERN.format(index))),
+            'vel': pd.read_csv(os.path.join(self.path_to_data, self.VEL_SUBPATH, self.VEL_PATTERN.format(index))),
+            'acc': pd.read_csv(os.path.join(self.path_to_data, self.ACC_SUBPATH, self.ACC_PATTERN.format(index))),
         }
 
 
 class IMUDataset(Dataset):
-    def __init__(self, path_to_data: str, features: List[str]) -> None:
+    def __init__(self, path_to_data: str, features: List[str], target: str = 'pos') -> None:
         super().__init__()
         self.path_to_data = path_to_data
         with open(os.path.join(self.path_to_data, 'meta.json')) as f:
             self.meta = json.load(f)
         self.data = {}
         self.features = features
+        self.target = target
         self.load_all()
 
     def load_all(self):
@@ -79,8 +94,8 @@ class IMUDataset(Dataset):
 
     def __getitem__(self, index):
         _, filename, local_index = self.meta['index_map'][index]
-        _stimulis = np.hstack([self.data[filename]['imu'][item][local_index:local_index+self.meta['window_sz']] for item in self.features]).T
-        _label = self.data[filename]['robot']['pos'][local_index+self.meta['window_sz'] - 1] - self.data[filename]['robot']['pos'][local_index]
+        _stimulis = np.hstack([self.data[filename]['imu'][item][local_index:local_index + self.meta['window_sz']] for item in self.features]).T
+        _label = self.data[filename]['robot'][self.target][local_index + self.meta['window_sz'] - 1] - self.data[filename]['robot'][self.target][local_index]
 
         return torch.tensor(_stimulis, dtype=torch.float32), torch.tensor(_label, dtype=torch.float32)
 
