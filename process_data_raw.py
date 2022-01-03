@@ -122,6 +122,25 @@ def interp_data(imu_data, robot_data):
         np.interp(global_ts, robot_data['ts'], robot_data['vel'][:, 2]),
     ],
         axis=-1)
+    robot_vel_ang_interp = np.stack([
+        np.interp(global_ts, robot_data['ts'], robot_data['vel_ang'][:, 0]),
+        np.interp(global_ts, robot_data['ts'], robot_data['vel_ang'][:, 1]),
+        np.interp(global_ts, robot_data['ts'], robot_data['vel_ang'][:, 2]),
+    ],
+        axis=-1)
+    robot_acc_interp = np.stack([
+        np.interp(global_ts, robot_data['ts'], robot_data['acc'][:, 0]),
+        np.interp(global_ts, robot_data['ts'], robot_data['acc'][:, 1]),
+        np.interp(global_ts, robot_data['ts'], robot_data['acc'][:, 2]),
+    ],
+        axis=-1)
+
+    robot_acc_ang_interp = np.stack([
+        np.interp(global_ts, robot_data['ts'], robot_data['acc_ang'][:, 0]),
+        np.interp(global_ts, robot_data['ts'], robot_data['acc_ang'][:, 1]),
+        np.interp(global_ts, robot_data['ts'], robot_data['acc_ang'][:, 2]),
+    ],
+        axis=-1)
 
     robot_quat_interp = np.stack([
         np.interp(global_ts, robot_data['ts'], robot_data['quat'][:, 0]),
@@ -144,8 +163,11 @@ def interp_data(imu_data, robot_data):
         },
         'robot': {
             'ts': global_ts,
-            'pos': robot_pos_interp,
             'vel': robot_vel_interp,
+            'vel_ang': robot_vel_ang_interp,
+            'acc': robot_acc_interp,
+            'acc_ang': robot_acc_ang_interp,
+            'pos': robot_pos_interp,
             'quat': robot_quat_interp,
             'rot': robot_rot_interp,
         },

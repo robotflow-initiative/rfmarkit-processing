@@ -103,6 +103,44 @@ class IMUDataset(Dataset):
         return self.meta['len']
 
 
+class IMUDatasetACC2ACC(Dataset):
+    flange = torch.tensor([[0.7071, 0.7071, 0], [-0.7071, -0.7071, 0], [0, 0, 1]])
+
+    def __init__(self, path_to_data: str) -> None:
+        super().__init__()
+        self.path_to_data = path_to_data
+        with open(os.path.join(self.path_to_data, 'meta.json')) as f:
+            self.meta = json.load(f)
+        self.data = {}
+        self.load_all()
+
+    def load_all(self):
+        for filename in self.meta['filenames']:
+            with open(os.path.join(self.path_to_data, filename), 'rb') as f:
+                self.data[filename] = pickle.load(f)
+
+    def __getitem__(self, index):
+        _, filename, local_index = self.meta['index_map'][index]
+        _stimulis = self.data[filename]['imu']['acc'][local_index:local_index + self.meta['window_sz']]
+        _stimulis_ts = torch.tensor(_stimulis, dtype=torch.float32)
+
+        _label = self.data[filename]['robot']['acc'][local_index:local_index + self.meta['window_sz']]
+        _label_ts = torch.tensor(_label, dtype=torch.float32)
+        _label_ts[:, 2] -= 1
+
+        _rot = self.data[filename]['robot']['rot'][local_index:local_index + self.meta['window_sz']]
+        _rot_ts = torch.tensor(_rot, dtype=torch.float32)
+
+        _label_ts = torch.matmul(torch.linalg.inv(_rot_ts), _label_ts.unsqueeze(-1)).squeeze(-1)
+        _label_tf = torch.matmul(self.flange, _label_ts.unsqueeze(-1)).squeeze(-1)
+        # _label_ts = _label_ts[:, [2, 0, 1]]
+
+        return torch.tensor(_stimulis, dtype=torch.float32).T, torch.tensor(_label, dtype=torch.float32).T
+
+    def __len__(self):
+        return self.meta['len']
+
+
 if __name__ == '__main__':
     ds = IMUDataset('./data_interp', features=['acc', 'gyro', 'mag'])
     ds.load_all()
