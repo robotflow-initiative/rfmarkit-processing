@@ -127,13 +127,10 @@ class IMUDatasetACC2ACC(Dataset):
         _label = self.data[filename]['robot']['acc'][local_index:local_index + self.meta['window_sz']]
         _label_ts = torch.tensor(_label, dtype=torch.float32)
         _label_ts[:, 2] -= 1
-
-        _rot = self.data[filename]['robot']['rot'][local_index:local_index + self.meta['window_sz']]
-        _rot_ts = torch.tensor(_rot, dtype=torch.float32)
-
-        _label_ts = torch.matmul(torch.linalg.inv(_rot_ts), _label_ts.unsqueeze(-1)).squeeze(-1)
-        _label_tf = torch.matmul(self.flange, _label_ts.unsqueeze(-1)).squeeze(-1)
-        # _label_ts = _label_ts[:, [2, 0, 1]]
+        _label_rot = self.data[filename]['robot']['rot'][local_index:local_index + self.meta['window_sz']]
+        _label_rot = torch.tensor(_label_rot, dtype=torch.float32)
+        _label_ts = torch.matmul(self.flange, _label_ts.unsqueeze(-1)).squeeze(-1)
+        _label_ts = torch.matmul(torch.linalg.inv(_label_rot), _label_ts.unsqueeze(-1)).squeeze(-1)
 
         return torch.tensor(_stimulis, dtype=torch.float32).T, torch.tensor(_label, dtype=torch.float32).T
 
