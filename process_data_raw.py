@@ -184,10 +184,10 @@ def work(data_collection, index, output_dir):
 
 if __name__ == '__main__':
     data_collection = IMUDatasetCollection('/hdd0/data/imu_data/N_1-1925',
-                                           label_subpath='Pos',
-                                           stimulis_subpath='imu',
-                                           label_pattern=['cartesianPos_{}.csv'],
-                                           stimulis_pattern=["imu_{}.csv"])
+                                           imu_subpath='imu',
+                                           pos_subpath='Pos',
+                                           vel_subpath='Vec',
+                                           acc_subpath="Aec")
     output_dir = './data_interp'
     WINDOW_SZ = 200
 
