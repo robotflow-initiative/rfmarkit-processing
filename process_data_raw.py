@@ -183,12 +183,12 @@ def work(data_collection, index, output_dir):
 
 
 if __name__ == '__main__':
-    data_collection = IMUDatasetCollection('./data_raw_py900_1000',
-                                           pos_subpath='Pos',
-                                           imu_subpath='IMU',
-                                           vel_subpath='Vec',
-                                           acc_subpath='Aec')
-    output_dir = './data_interp_py900_1000'
+    data_collection = IMUDatasetCollection('/hdd0/data/imu_data/N_1-1925',
+                                           label_subpath='Pos',
+                                           stimulis_subpath='imu',
+                                           label_pattern=['cartesianPos_{}.csv'],
+                                           stimulis_pattern=["imu_{}.csv"])
+    output_dir = './data_interp'
     WINDOW_SZ = 200
 
     record_index_map = []
@@ -196,11 +196,14 @@ if __name__ == '__main__':
     record_filenames = []
 
     with tqdm.tqdm(range(len(data_collection))) as pbar:
-        # for index in range(1, 1 + len(data_collection)):
-        for index in range(901, 901 + len(data_collection)):
-            res = from_collection_entry_to_np(data_collection, index)  # 读取数据，csv->numpy
-            res_interp = interp_data(res['imu'], res['robot'])  # 差值
-            res_filename = 'record_{0:06}.pkl'.format(index)  # 计算文件名
+        for index in range(1, 1 + len(data_collection)):
+            try:
+                res = from_collection_entry_to_np(data_collection, index) # 读取数据，csv->numpy
+            except Exception as err:
+                print(err)
+                continue
+            res_interp = interp_data(res['imu'], res['robot']) # 差值
+            res_filename = 'record_{0:06}.pkl'.format(index) # 计算文件名
             with open(os.path.join(output_dir, res_filename), 'wb') as f:
                 pickle.dump(res_interp, f)  # 保存成pickle
 
