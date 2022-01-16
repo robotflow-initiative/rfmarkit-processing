@@ -189,6 +189,8 @@ if __name__ == '__main__':
                                            vel_subpath='Vec',
                                            acc_subpath="Aec")
     output_dir = './data_interp'
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
     WINDOW_SZ = 200
 
     record_index_map = []
