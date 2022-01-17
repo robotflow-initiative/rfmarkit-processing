@@ -2,9 +2,9 @@
 imu_data
 data
 build
-measurement
-imu_mem
-hipunuc_mem
+measurements
+measurements/imu_mem
+measurements/hipnuc_mem
 delata10_mem
 .vscode
 .ipynb_checkoints
@@ -15,4 +15,4 @@ delata10_mem
 *.DS_Store
 *.zip
 *.pkl
-.ipynb_checkoints
+*.ipynb_checkoints
