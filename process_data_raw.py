@@ -1,4 +1,5 @@
 import json
+from typing import Dict
 from IMUDataset import IMUDatasetCollection
 from algorithm import IMUAlgorithm
 import numpy as np
@@ -7,9 +8,19 @@ import tqdm
 import os
 
 
-def from_collection_entry_to_np(data_collection, index):
+def from_collection_entry_to_np(data_collection, index, offset=0):
+    """Load Numpy format data from data collection
+
+    Args:
+        data_collection ([type]): [description]
+        index ([type]): [description]
+        offset (int, optional): Offset of IMU data relative to Robot, positive, IMU[t+offset] = Robot[t]. Defaults to 0.
+
+    Returns:
+        [type]: [description]
+    """
     data_entry = data_collection[index]
-    imu_df = data_entry['imu']
+    imu_df = data_entry['imu'][offset:]
     imu_np = imu_df.to_numpy()
     imu_ts = imu_np[:, 2].astype(np.float64)
     imu_ts -= imu_ts[0]
@@ -20,26 +31,27 @@ def from_collection_entry_to_np(data_collection, index):
     imu_quat = imu_np[:, 15:19].astype(np.float64)
     imu_rot = IMUAlgorithm.quat_to_pose_mat_np(imu_quat)
 
-    robot_pos_df = data_entry['pos']
+    robot_pos_df = data_entry['pos'][:len( data_entry['pos'])-offset]
     robot_pos_np = robot_pos_df.to_numpy()
     # @remark Resolution 1ms
     robot_ts = robot_pos_np[:, 1].astype(np.float64) * 1e-3
     robot_ts -= robot_ts[0]
     robot_pos = robot_pos_np[:, 14:17].astype(np.float64)
-    robot_rot = np.stack([robot_pos_np[:, 2:5], robot_pos_np[:, 6:9], robot_pos_np[:, 10:13]], axis=-1)
+    robot_rot = np.stack(
+        [robot_pos_np[:, 2:5], robot_pos_np[:, 6:9], robot_pos_np[:, 10:13]], axis=-1)
     robot_quat = IMUAlgorithm.pose_mat_to_quat_np(robot_rot)
     # Diff method
     # robot_vel = np.zeros_like(robot_pos)
     # robot_vel[1:] = (robot_pos[1:] - robot_pos[:-1]) * 1e3
     # robot_vel = IMUAlgorithm.filter_middle(robot_vel, 200)
 
-    robot_vel = data_entry['vel']
+    robot_vel = data_entry['vel'][:len( data_entry['pos'])-offset]
     assert len(robot_vel) == len(robot_pos)
     robot_vel_np = robot_vel.to_numpy()
     robot_vel = robot_vel_np[:, 2:5].astype(np.float64)
     robot_vel_ang = robot_vel_np[:, 5:8].astype(np.float64)
 
-    robot_acc = data_entry['acc']
+    robot_acc = data_entry['acc'][:len( data_entry['pos'])-offset]
     assert len(robot_acc) == len(robot_pos)
     robot_acc_np = robot_acc.to_numpy()
     robot_acc = robot_acc_np[:, 2:5].astype(np.float64)
@@ -175,6 +187,17 @@ def interp_data(imu_data, robot_data):
     }
 
 
+def get_imu_robot_offset(res: Dict[str, Dict[str, np.ndarray]]):
+    SEARCH_T_MAX: int = 1000
+    SAMPLE_LENGTH: int = 500
+    imu_sample = res['imu']['quat'][:SAMPLE_LENGTH]
+    robot_sample = res['robot']['quat'][:SEARCH_T_MAX+SAMPLE_LENGTH]
+    errors: np.ndarray = ((np.lib.stride_tricks.as_strided(
+        robot_sample, (SAMPLE_LENGTH, 4)) - imu_sample)**2).sum(axis=1)
+    offset: int = int(errors.argmin())  # IMU[t+offset] = Robot[t]
+    return offset
+
+
 def work(data_collection, index, output_dir):
     res = from_collection_entry_to_np(data_collection, index)
     res_interp = interp_data(res['imu'], res['robot'])
@@ -199,13 +222,18 @@ if __name__ == '__main__':
 
     with tqdm.tqdm(range(len(data_collection))) as pbar:
         for index in range(1, 1 + len(data_collection)):
+            offset: int = 0
             try:
-                res = from_collection_entry_to_np(data_collection, index) # 读取数据，csv->numpy
+                res = from_collection_entry_to_np(
+                    data_collection, index)  # 读取数据，csv->numpy
+                offset = get_imu_robot_offset(res)  # 计算IMU相对Robot的滞后
+                res = from_collection_entry_to_np(
+                    data_collection, index, offset)  # 重新读取
             except Exception as err:
                 print(err)
                 continue
-            res_interp = interp_data(res['imu'], res['robot']) # 差值
-            res_filename = 'record_{0:06}.pkl'.format(index) # 计算文件名
+            res_interp = interp_data(res['imu'], res['robot'])  # 差值
+            res_filename = 'record_{0:06}.pkl'.format(index)  # 计算文件名
             with open(os.path.join(output_dir, res_filename), 'wb') as f:
                 pickle.dump(res_interp, f)  # 保存成pickle
 
@@ -215,6 +243,7 @@ if __name__ == '__main__':
             record_index_max += res_dataset_len  # 更新最大记录序号的值
 
             record_filenames.append(res_filename)
+            pbar.set_description(f"Index={index}, Offset={offset}")
             pbar.update()
 
     with open(os.path.join(output_dir, 'meta.json'), 'w+') as meta_fp:
