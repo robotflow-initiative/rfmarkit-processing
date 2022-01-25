@@ -1,0 +1,3 @@
+[submodule "3rdparty/gnss-ins-sim"]
+	path = 3rdparty/gnss-ins-sim
+	url = git@github.com:Aceinna/gnss-ins-sim.git
