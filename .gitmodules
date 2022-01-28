@@ -1,3 +1,18 @@
 [submodule "3rdparty/gnss-ins-sim"]
 	path = 3rdparty/gnss-ins-sim
 	url = git@github.com:Aceinna/gnss-ins-sim.git
+[submodule "3rdparty/EKF_IMU_GPS"]
+	path = 3rdparty/EKF_IMU_GPS
+	url = git@github.com:sugbuv/EKF_IMU_GPS.git
+[submodule "3rdparty/ukfm"]
+	path = 3rdparty/ukfm
+	url = git@github.com:CAOR-MINES-ParisTech/ukfm.git
+[submodule "3rdparty/laika"]
+	path = 3rdparty/laika
+	url = git@github.com:commaai/laika.git
+[submodule "3rdparty/OpticalTracking"]
+	path = 3rdparty/OpticalTracking
+	url = git@github.com:Doc-Ok/OpticalTracking.git
+[submodule "3rdparty/gtsam"]
+	path = 3rdparty/gtsam
+	url = git@github.com:borglab/gtsam
