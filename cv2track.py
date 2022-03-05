@@ -9,7 +9,8 @@ import math
 from typing import List, Dict
 import tqdm
 from collections import Counter
-
+from scipy import signal
+from typing import Tuple
 
 class TrackSequence:
     def __init__(self, center, n_step: int = 3):
@@ -57,13 +58,15 @@ class TrackSequence:
                       thresh,
                       erode_size,
                       erode_iterations,
-                      blur_size = 11,
+                      blur_size=11,
                       curr_time=time.time(), frame_no=-1):
         gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         blur_frame = cv2.GaussianBlur(gray_frame, (blur_size, blur_size), 0)
         thresh, binary_frame = cv2.threshold(blur_frame, thresh, 255, cv2.THRESH_BINARY)
         binary_frame = cv2.erode(binary_frame, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (erode_size, erode_size)),
                                  iterations=erode_iterations)
+        binary_frame = cv2.dilate(binary_frame, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (erode_size, erode_size)),
+                                  iterations=erode_iterations)
 
         contours, hierarchy = cv2.findContours(binary_frame, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         cnts = imutils.grab_contours((contours, hierarchy))
@@ -143,8 +146,22 @@ class TrackSequence:
         print(f"Num of sequences: {len(finished_track_sequences)}")
         return finished_track_sequences
 
-    def process_track(self):
-        DIFF_THRESH = 2000  # Difference in luminance between light/dark frames
+    def filter_bandpass(cls,
+                        data: np.ndarray,
+                        band: Tuple[float, float] = (0.001, 8),
+                        order: int = 7,
+                        sample_freq: float = 100):
+        res: np.array = np.copy(data)
+        sos = signal.butter(order, tuple(map(lambda x: 2 * x / sample_freq, band)), 'bandpass', output='sos')
+        for i in range(res.shape[-1]):
+            res[..., i] = signal.sosfiltfilt(sos, data[..., i])
+
+        # FIXME: Experimental
+        # res -= np.linspace(res[0,:],np.array([0,0,0]), len(res))
+        return res
+
+    def process_track(self, frames):
+        DIFF_THRESH = 800  # Difference in luminance between light/dark frames
         PERIOD = 0.05
 
         raw_lux = np.zeros(shape=(len(self),), dtype=float)
@@ -154,7 +171,7 @@ class TrackSequence:
             raw_lux[idx] = np.sum(frames[frame_no][y - r:y + r, x - r:x + r])  # Get luminance
             raw_lux_dt[idx] = t  # Temporarily save t，this is not dt
 
-        raw_lux_dt[1:] = raw_lux_dt[1:] - raw_lux_dt[:-1]  # Finally get frame deltas
+        raw_lux_dt[1:] = raw_lux_dt[1:] - raw_lux_dt[:-1]  # Finally get frame time deltas
         raw_lux_dt[0] = 0  # Finally get frame deltas
         # Usually the delta is small
         frame_delta_avg, frame_delta_std = raw_lux_dt.mean(), raw_lux_dt.std()
@@ -163,11 +180,33 @@ class TrackSequence:
         # Get frame luminance difference
         raw_lux_diff = np.zeros_like(raw_lux)
         raw_lux_diff[1:] = raw_lux[1:] - raw_lux[:-1]
+        raw_lux_diff2 = np.zeros_like(raw_lux_diff)
+        raw_lux_diff2[1:] = raw_lux_diff[1:] - raw_lux_diff[:-1]
         # Convert to binary using threshold
-        raw_lux_diff_binary = (raw_lux_diff > DIFF_THRESH).astype(np.int64) - (raw_lux_diff < - DIFF_THRESH).astype(
+        #FIXME:
+        # _thresh = abs(np.average(raw_lux_diff)) * 2
+        _thresh = 800
+        raw_lux_diff_binary = (raw_lux_diff > _thresh).astype(np.int64) - (raw_lux_diff < - _thresh).astype(
             np.int64)
+        lux_filtered = self.filter_bandpass(np.expand_dims(raw_lux, 1), (8, 49.99), order=7, sample_freq=100)
+
         # Visualisation
-        plt.plot(np.linspace(0, self.duration, len(self)), raw_lux_diff_binary, linewidth=1)
+        x_axis = np.linspace(0, self.duration, len(self))
+        plt.plot(x_axis, raw_lux, linewidth=1)
+        plt.title('raw_lux')
+        plt.show()
+        plt.plot(x_axis, lux_filtered, linewidth=1)
+        plt.title('raw_filtered')
+        plt.show()
+        plt.plot(x_axis, raw_lux_diff, linewidth=1)
+        plt.plot(x_axis, np.ones_like(x_axis) * _thresh, linewidth=1)
+        plt.title('raw_lux_diff')
+        plt.show()
+        plt.plot(x_axis, raw_lux_diff2, linewidth=1)
+        plt.title('raw_lux_diff2')
+        plt.show()
+        plt.plot(x_axis, raw_lux_diff_binary, linewidth=1)
+        plt.title('raw_lux_diff_binary')
         plt.show()
 
         sync_interval = 0  # Length of sync period approx to 3 * PERIOD
@@ -235,12 +274,13 @@ class TrackSequence:
 
 if __name__ == '__main__':
     # Hyper parameters
-    FILE = "./IMG_0504.MOV"
+    FILE = r"E:\Data\liyutong\record\highspeed\test_tutian-0b8e5cb4-2022-03-05_172423\041190220306\mvDATA.mp4"
+    # FILE = "./IMG_0504.MOV"
     BLUR_SIZE = 11  # Filter with cv2.GaussianBlur for better thresh segmentation
     THRESH = 50  # Brightness thresh
     ERODE_ITERATIONS: int = 1  # Erode intensity
     ERODE_SIZE: int = 2  # Structure size, 2 or 3 is OK
-    TRACK_MINIMAL_DISTANCE = 16
+    TRACK_MINIMAL_DISTANCE = 32
 
     # Analyse result
     analyse_results: List[Dict] = []
@@ -266,19 +306,26 @@ if __name__ == '__main__':
     print(f"fps={fps}")
     dt = 1 / fps
     curr_time = 0
+    reference_frame = None
     frames = []
-    frame_no = 0
+    frame_num = 0
     while cap.isOpened():
         ret, origin_frame = cap.read()
         if not ret:
             cv2.destroyAllWindows()
             break
+        # origin_frames.append(origin_frame)
+        if reference_frame is None:
+            reference_frame = origin_frame
+        # augmented_frame = cv2.convertScaleAbs(origin_frame, alpha=2.2, beta=50)
+        # gray_frame = cv2.decolor(origin_frame, cv2.COLOR_BGR2GRAY)[0]
         gray_frame = cv2.cvtColor(origin_frame, cv2.COLOR_BGR2GRAY)
         blur_frame = cv2.GaussianBlur(gray_frame, (BLUR_SIZE, BLUR_SIZE), 0)
         frames.append(blur_frame)
-        center_frame, res = TrackSequence.analyse_frame(origin_frame, THRESH, ERODE_SIZE, ERODE_ITERATIONS, curr_time, frame_no)
+        center_frame, res = TrackSequence.analyse_frame(origin_frame, THRESH, ERODE_SIZE, ERODE_ITERATIONS, BLUR_SIZE,
+                                                        curr_time, frame_num)
         curr_time += dt
-        frame_no += 1
+        frame_num += 1
         analyse_results.append(res)
 
         cv2.imshow('demo_control', center_frame)
@@ -293,27 +340,30 @@ if __name__ == '__main__':
 
     # INPUT: List of TrackSequences
     # OUTPUT: Index of imu
-    [seq.process_track() for seq in finished_track_sequences]
+    [seq.process_track(frames) for seq in finished_track_sequences]
 
     # Collect date for visualisation
-    data = [[] for _ in range(len(frames))]
-    for seq in finished_track_sequences:
-        for center in seq.seq:
-            x, y, r, t, no = center['x'], center['y'], int(center['r']), center['t'], center['frame_no']
-            data[no].append({'x': x, 'y': y, 'r': r, 'idx': seq.idx, 'no': no})
+    VISUALIZE = True
+    if VISUALIZE:
+        data = [[] for _ in range(frame_num)]
+        for seq in finished_track_sequences:
+            for center in seq.seq:
+                x, y, r, t, no = center['x'], center['y'], int(center['r']), center['t'], center['frame_no']
+                data[no].append({'x': x, 'y': y, 'r': r, 'idx': seq.idx, 'no': no})
 
-    frame_no = 0
-    os.makedirs('./out')
-    for gray_frame in frames:
-        for point in data[frame_no]:
-            # 在图像上绘制轮廓及中心
-            cv2.circle(gray_frame, (point['x'], point['y']), int(point['r']), (255, 255, 255), 1)
-            cv2.putText(gray_frame, str(point['idx']), (point['x'] - 20, point['y'] - 20),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
-        cv2.imshow('demo_control', gray_frame)
-        cv2.imwrite(f'./out/{frame_no}.jpg', gray_frame)
-        frame_no += 1
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            cv2.destroyAllWindows()
-            break
+        if not os.path.exists('example/out'):
+            os.makedirs('example/out')
+        for frame_no in range(frame_num):
+            frame = np.zeros_like(reference_frame)
+            for point in data[frame_no]:
+                # 在图像上绘制轮廓及中心
+                cv2.circle(frame, (point['x'], point['y']), int(point['r']), (255, 255, 255), 1)
+                cv2.putText(frame, str(point['idx']), (point['x'] - 20, point['y'] - 20),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+            cv2.imshow('demo_control', frame)
+            cv2.imwrite(f'./out/{frame_num}.jpg', frame)
+            frame_num += 1
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                cv2.destroyAllWindows()
+                break
     print('finish')
