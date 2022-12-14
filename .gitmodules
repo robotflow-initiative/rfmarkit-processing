@@ -16,3 +16,9 @@
 [submodule "3rdparty/gtsam"]
 	path = 3rdparty/gtsam
 	url = git@github.com:borglab/gtsam
+[submodule "3rdparty/TLIO"]
+	path = 3rdparty/TLIO
+	url = git@github.com:CathIAS/TLIO.git
+[submodule "3rdparty/liegroups"]
+	path = 3rdparty/liegroups
+	url = git@github.com:utiasSTARS/liegroups.git
