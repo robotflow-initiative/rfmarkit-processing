@@ -1,3 +1,5 @@
+# imu-articulated-processing
+
 ## Convenient ffmpeg commands
 
 ### frame_sequence_to_video
