@@ -2,7 +2,7 @@
 .idea
 
 *imu_data
-*data
+*/data
 *build
 *measurements
 *measurements/imu_mem
@@ -12,7 +12,6 @@
 data_raw*
 data_datasets*
 data_interp*
-log*
 events.*
 
 *.ckpt
