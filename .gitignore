@@ -1,12 +1,30 @@
 .vscode
 .idea
 
+*imu_data
+*data
+*build
+*measurements
+*measurements/imu_mem
+*measurements/hipnuc_mem
+*delata10_mem
+
 data_raw*
 data_datasets*
 data_interp*
 log*
+events.*
 
 *.ckpt
 *.pyc
 *.DS_Store
-events.*
+*.pkl
+*.pyc
+*.npz
+*.csv
+*.zip
+*.json
+*.code-workspace
+*.ipynb_checkoints
+
+
