@@ -28,8 +28,6 @@ CONFIG_READER_N_PRELOAD = 4
 CONFIG_TRACKER_MINIMAL_DISTANCE = 32
 CONFIG_CAMERA_MASK = ["r22", "r69"]
 
-VAR_RECORDING_DIR = r"D:\pre-release\data\immobile\bottle-014-1"
-
 
 def euclidean_distance(detection, tracked_object):
     return np.linalg.norm(detection.points - tracked_object.estimate)
@@ -108,11 +106,9 @@ def main():
         console = Console(file=f)
 
         # FIXME: Change this to your own path
-        METHOD = 'ts'  # or 'sys_ts'
-        IMMOBILE_DIR = r"D:\pre-release\data\immobile"
-        PORTABLE_DIR = r"D:\pre-release\data\portable"
-        FRAME_TIMESTAMP_DELTA_THRESHOLD_MS = 33
-
+        DATA_DIR = r"D:\pre-release"
+        IMMOBILE_DIR = osp.join(DATA_DIR, "data", "immobile")
+        PORTABLE_DIR = osp.join(DATA_DIR, "data", "portable")
         TARGETS = list(filter(lambda x: osp.isdir(x), [osp.join(IMMOBILE_DIR, x) for x in os.listdir(IMMOBILE_DIR)] + [osp.join(PORTABLE_DIR, x) for x in os.listdir(PORTABLE_DIR)]))
         print(TARGETS)
         with tqdm.tqdm(total=len(TARGETS)) as pbar:
@@ -126,4 +122,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    run_once(r"D:\pre-release\data\immobile\eyeglasses-049-1")
+    # main()

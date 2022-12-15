@@ -142,5 +142,7 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
-    # process_recording(r"D:\pre-release\data\immobile\bottle-014-1")
+    # main()
+    METHOD = 'ts'
+    console = Console()
+    process_recording(r"D:\pre-release\data\immobile\eyeglasses-049-1")

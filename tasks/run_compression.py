@@ -28,7 +28,7 @@ def _compress_color_folder(input_folder, output_folder, n_prefetch):
     reader = get_directory_reader(input_folder, 'color_bmp', num_preload=n_prefetch, read_function=_read_color)
     with tqdm.tqdm(range(len(reader))) as pbar:
         while not reader.eof:
-            frame, meta = reader.next()
+            frame, meta, _ = reader.next()
             frame_basename_without_ext = osp.splitext(osp.basename(meta['basename']))[0]
             cv2.imwrite(osp.join(output_folder, frame_basename_without_ext + ".jpeg"), frame)
             pbar.update()
@@ -38,7 +38,7 @@ def _compress_depth_folder(input_folder, output_folder, n_prefetch):
     reader = get_directory_reader(input_folder, 'depth_npy', num_preload=n_prefetch)
     with tqdm.tqdm(range(len(reader))) as pbar:
         while not reader.eof:
-            frame, meta = reader.next()
+            frame, meta, _ = reader.next()
             frame_basename_without_ext = osp.splitext(osp.basename(meta['basename']))[0]
             np.savez_compressed(osp.join(output_folder, frame_basename_without_ext + ".npz"), frame)
             pbar.update()
@@ -152,5 +152,5 @@ if __name__ == '__main__':
     # debug
     pass
     # main()
-    # console = Console()
-    # compress_record(r"\\100.99.96.101\articulated_recording\archived\pre-release-2022-12-09\data\portable\box-024-1", r"C:\Users\liyutong\Downloads")
+    console = Console()
+    compress_record(r"C:\Users\liyutong\Downloads\eyeglasses-049-1", r"D:\pre-release\data\immobile")
