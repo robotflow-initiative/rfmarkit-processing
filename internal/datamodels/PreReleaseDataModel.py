@@ -4,9 +4,19 @@ import json
 import os.path as osp
 from typing import Optional
 
+import cv2
 import numpy as np
 import tqdm
 from realsense_recorder.io import DirectoryReader, get_directory_reader
+
+
+def _read_function(path: str) -> np.ndarray:
+    """
+    Read anything, from a path
+    :param path:
+    :return: numpy.ndarray, RGB frame
+    """
+    return cv2.imread(path, cv2.IMREAD_COLOR)
 
 
 @dataclasses.dataclass()
@@ -23,8 +33,8 @@ class PreReleaseRealsenseStreamModelPerCamera:
         self.path_to_depth = osp.join(self.path_to_recording, 'depth')
 
     def load(self, selected_frames: Optional[dict] = None):
-        self.color = get_directory_reader(self.path_to_color, 'color_jpeg', self.num_preload)
-        self.depth = get_directory_reader(self.path_to_color, 'depth_npz', self.num_preload)
+        self.color = get_directory_reader(self.path_to_color, 'color_jpeg', self.num_preload, read_function=_read_function)
+        self.depth = get_directory_reader(self.path_to_color, 'depth_npz', self.num_preload, read_function=_read_function)
         if selected_frames is not None:
             self.color.reload(list(map(lambda x: osp.join(self.path_to_color, x), selected_frames['color'])), sort=True)
             self.depth.reload(list(map(lambda x: osp.join(self.path_to_color, x), selected_frames['color'])), sort=True)
@@ -104,7 +114,7 @@ if __name__ == '__main__':
     x.load()
     print(x)
     readers = [x.color for x in x.realsense_stream.recordings.values()]
-    with tqdm.tqdm(total=len(readers)*len(readers[0])) as pbar:
+    with tqdm.tqdm(total=len(readers) * len(readers[0])) as pbar:
         while not any([reader.eof for reader in readers]):
             [reader.next() for reader in readers]
             pbar.update(len(readers))

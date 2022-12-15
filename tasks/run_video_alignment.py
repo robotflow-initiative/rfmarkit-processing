@@ -10,7 +10,7 @@ from rich.console import Console
 
 console: Optional[Console] = None
 
-from lib.PreReleaseDataModel import PreReleaseRecordingModel
+from internal.datamodels.PreReleaseDataModel import PreReleaseRecordingModel
 
 METHOD: Optional[str] = None
 

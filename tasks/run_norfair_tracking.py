@@ -1,4 +1,6 @@
+import datetime
 import json
+import os
 import os.path as osp
 from typing import List, Dict, Any
 
@@ -7,6 +9,7 @@ import numpy as np
 import tqdm
 from norfair import Tracker, draw_tracked_objects, Detection
 from realsense_recorder.io import DirectoryReader
+from rich.console import Console
 
 from internal.datamodels import PreReleaseRecordingModel
 from internal.detector import OpenCVDetector
@@ -90,7 +93,6 @@ def run_once(recording_path: str):
                         break
                 pbar.update(1)
 
-    print(tracking_result)
     with open(osp.join(recording_path, "realsense", "led_tracking_result.json"), "w") as f:
         json.dump({
             "meta": {
@@ -101,5 +103,27 @@ def run_once(recording_path: str):
         }, f, indent=4)
 
 
-run_once(VAR_RECORDING_DIR)
-print()
+def main():
+    with open('../logs/' + "run_norfair_detection_" + datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + ".log", 'w') as f:
+        console = Console(file=f)
+
+        # FIXME: Change this to your own path
+        METHOD = 'ts'  # or 'sys_ts'
+        IMMOBILE_DIR = r"D:\pre-release\data\immobile"
+        PORTABLE_DIR = r"D:\pre-release\data\portable"
+        FRAME_TIMESTAMP_DELTA_THRESHOLD_MS = 33
+
+        TARGETS = list(filter(lambda x: osp.isdir(x), [osp.join(IMMOBILE_DIR, x) for x in os.listdir(IMMOBILE_DIR)] + [osp.join(PORTABLE_DIR, x) for x in os.listdir(PORTABLE_DIR)]))
+        print(TARGETS)
+        with tqdm.tqdm(total=len(TARGETS)) as pbar:
+            for target in TARGETS:
+                try:
+                    run_once(target)
+                    console.log(f"Finished {target}")
+                except Exception as _:
+                    console.log(f"Failed {target}")
+                pbar.update(1)
+
+
+if __name__ == '__main__':
+    main()
