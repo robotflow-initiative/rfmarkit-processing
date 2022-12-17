@@ -57,41 +57,33 @@ def process_recording(path_to_recording: str, time_delta_threshold_ms: int = 33)
     selected_frames = {
         cam: [] for cam in cameras
     }
-    last_frame_counter = -1
-    curr_frame_idx = 0
+    last_frame_counter = float('inf')
     slave_frame_idx = {
         cam: 0 for cam in cameras if cam is not master_camera
     }
 
-    master_frame_counters = np.array([x['frame_counter'] for x in all_metadata['metadata'][master_camera]])
-    master_frame_timestamps = np.array([x[METHOD] for x in all_metadata['metadata'][master_camera]])
+    master_frame_counters = np.array([x['frame_counter'] for x in all_metadata['metadata'][master_camera][:-1]])
+    master_frame_timestamps = np.array([x[METHOD] for x in all_metadata['metadata'][master_camera][:-1]])
     slave_frame_timestamps = {
-        cam: np.array([x[METHOD] for x in all_metadata['metadata'][cam]]) for cam in cameras if cam != master_camera
+        cam: np.array([x[METHOD] for x in all_metadata['metadata'][cam][:-1]]) for cam in cameras if cam != master_camera
     }
     num_dropped_frames = 0
-    for curr_frame_idx in range(len(master_frame_counters)):
-        curr_frame_counter = master_frame_counters[curr_frame_idx]  # read frame counter from master camera
+    for curr_frame_idx in range(len(master_frame_timestamps)):  # iterate backwards
+        curr_frame_counter = master_frame_counters[len(master_frame_timestamps)-curr_frame_idx-1]  # read frame counter from master camera
 
-        if curr_frame_counter > last_frame_counter:  # if it is a new frame
+        if curr_frame_counter < last_frame_counter:  # if it is a new frame
             last_frame_counter = curr_frame_counter  # update last frame counter
 
             # check if slave cameras have matched frame
-            is_valid_frame = True
-            for cam in filter(lambda x: x != master_camera, cameras):
-                time_delta = np.abs(slave_frame_timestamps[cam] - master_frame_timestamps[curr_frame_idx])
-                minimum_time_delta = np.min(time_delta)
-                if minimum_time_delta > time_delta_threshold_ms:
-                    is_valid_frame = False
-                    if np.argmin(time_delta) < len(slave_frame_timestamps[cam]) - 1:  # not the last frame
-                        num_dropped_frames += 1
-                    break
-                else:
-                    slave_frame_idx[cam] = np.argmin(time_delta)
-            if not is_valid_frame:
-                continue
-            else:
-                [selected_frames[cam].append(slave_frame_idx[cam]) for cam in slave_frame_idx.keys()]
-                selected_frames[master_camera].append(curr_frame_idx)
+            if not all([len(slave_frame_timestamps[cam])-curr_frame_idx-1 >= 0 for cam in slave_frame_idx.keys()]):
+                break
+            [selected_frames[cam].append(len(slave_frame_timestamps[cam])-curr_frame_idx-1) for cam in slave_frame_idx.keys()]
+            selected_frames[master_camera].append(len(master_frame_timestamps)-curr_frame_idx-1)
+        else:
+            num_dropped_frames += 1
+            continue
+
+    [selected_frames[cam].sort() for cam in selected_frames.keys()]
     filenames = _query_filenames(selected_frames, all_metadata, cameras)
     # Assert all frames have equal number of frames
     assert min([len(x) for x in filenames[master_camera].values()]) == min([len(x) for x in filenames[master_camera].values()])
@@ -124,7 +116,7 @@ def process_recording(path_to_recording: str, time_delta_threshold_ms: int = 33)
 
 def main():
     global console, METHOD
-    with open('./' + "run_video_alignment_" + datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + ".log", 'w') as f:
+    with open('../logs/' + "run_video_alignment_" + datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + ".log", 'w') as f:
         console = Console(file=f)
 
         # FIXME: Change this to your own path
@@ -142,7 +134,7 @@ def main():
 
 
 if __name__ == '__main__':
-    # main()
-    METHOD = 'ts'
-    console = Console()
-    process_recording(r"D:\pre-release\data\immobile\eyeglasses-049-1")
+    main()
+    # METHOD = 'ts'
+    # console = Console()
+    # process_recording(r"D:\pre-release\data\immobile\bottle-018-1")

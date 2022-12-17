@@ -1,2 +1,1 @@
 from .Realsense import RealsenseCamera, RealsenseCameraSystem
-from .DirectoryReader import get_directory_reader

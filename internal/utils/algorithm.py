@@ -33,6 +33,19 @@ class IMUAlgorithm(object):
         return pose_mat
 
     @classmethod
+    def visualize_nd(cls, data: List[np.ndarray], timestamp: List[np.ndarray], title: str):
+        fig = plt.figure(figsize=(16, 8))
+
+        ax = fig.add_subplot(111)
+        n = len(data)
+        for i in range(n):
+            ax.scatter(timestamp[i], data[i], s=2)
+        ax.set_title(title)
+
+        plt.show()
+        return fig
+
+    @classmethod
     def visualize_3d(cls, data: np.ndarray, timestamp: np.ndarray, title: str):
         fig = plt.figure(figsize=(32, 8))
 
@@ -49,6 +62,7 @@ class IMUAlgorithm(object):
         ax.set_title(title)
 
         plt.show()
+        return fig
 
     @classmethod
     def visualize_1d(cls, data: np.ndarray, timestamp: np.ndarray, title: str):
@@ -60,6 +74,7 @@ class IMUAlgorithm(object):
         plt.gca().set_aspect('equal', adjustable='box')
 
         plt.show()
+        return fig
 
     @classmethod
     def filter_bandpass(cls,

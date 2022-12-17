@@ -19,6 +19,22 @@ def _read_function(path: str) -> np.ndarray:
     return cv2.imread(path, cv2.IMREAD_COLOR)
 
 
+def _parse_function(label: str):
+    """
+    Parse meta data from label as string
+    :param label:
+    :return:
+    """
+    basename = osp.basename(label)
+    meta = osp.splitext(basename)[0].split('_')
+    return {
+        "frame_idx": meta[0],
+        "ts": meta[1],
+        "sys_ts": meta[2],
+        "basename": basename
+    }
+
+
 @dataclasses.dataclass()
 class PreReleaseRealsenseStreamModelPerCamera:
     path_to_recording: str
@@ -33,8 +49,8 @@ class PreReleaseRealsenseStreamModelPerCamera:
         self.path_to_depth = osp.join(self.path_to_recording, 'depth')
 
     def load(self, selected_frames: Optional[dict] = None):
-        self.color = get_directory_reader(self.path_to_color, 'color_jpeg', self.num_preload, read_function=_read_function)
-        self.depth = get_directory_reader(self.path_to_color, 'depth_npz', self.num_preload, read_function=_read_function)
+        self.color = get_directory_reader(self.path_to_color, 'color_jpeg', self.num_preload, read_function=_read_function, parse_function=_parse_function)
+        self.depth = get_directory_reader(self.path_to_color, 'depth_npz', self.num_preload, read_function=_read_function, parse_function=_parse_function)
         if selected_frames is not None:
             self.color.reload(list(map(lambda x: osp.join(self.path_to_color, x), selected_frames['color'])), sort=True)
             self.depth.reload(list(map(lambda x: osp.join(self.path_to_color, x), selected_frames['color'])), sort=True)
@@ -67,7 +83,10 @@ class PreReleaseRealsenseStreamModel:
         self.metadata = json.load(open(osp.join(self.path_to_stream, 'metadata_all.json')))
         self.config = json.load(open(osp.join(self.path_to_stream, 'realsense_config.json')))
         if osp.exists(self.path_to_selected_frames):
-            self.selected_frames = json.load(open(self.path_to_selected_frames))
+            try:
+                self.selected_frames = json.load(open(self.path_to_selected_frames))
+            except json.decoder.JSONDecodeError:
+                self.selected_frames = None
         else:
             self.selected_frames = None
 

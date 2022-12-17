@@ -122,5 +122,5 @@ def main():
 
 
 if __name__ == '__main__':
-    run_once(r"D:\pre-release\data\immobile\eyeglasses-049-1")
-    # main()
+    # run_once(r"D:\pre-release\data\immobile\eyeglasses-049-1")
+    main()
