@@ -17,7 +17,7 @@ st.set_option('deprecation.showPyplotGlobalUse', False)
 METHOD = 'ts'
 FORMAT = 'jpeg'
 
-recording_base_dir_ = st.text_input('recording_base_dir', r'D:\pre-release\data')  # FIXME: change to your local path
+recording_base_dir_ = st.text_input('recording_base_dir', r'D:\pre-release\data')
 recording_type = st.selectbox('recording_type', [osp.basename(x) for x in os.listdir(recording_base_dir_)])
 recording_base_dir = osp.join(recording_base_dir_, recording_type)
 recording_name = ""

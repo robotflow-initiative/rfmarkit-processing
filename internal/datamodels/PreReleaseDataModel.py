@@ -67,7 +67,7 @@ class PreReleaseRealsenseStreamModel:
     metadata: dict = dataclasses.field(init=False)
     config: dict = dataclasses.field(init=False)
     selected_frames: Optional[dict] = dataclasses.field(init=False)
-    camera_friendly_names = property(lambda self: self.path_to_recordings.keys())
+    camera_friendly_names = property(lambda self: list(self.path_to_recordings.keys()))
     path_to_cameras = property(lambda self: [osp.join(self.path_to_stream, name) for name in self.camera_friendly_names])
 
     def __post_init__(self):
