@@ -17,12 +17,12 @@ st.set_option('deprecation.showPyplotGlobalUse', False)
 METHOD = 'ts'
 FORMAT = 'jpeg'
 
-recording_base_dir_ = st.text_input('recording_base_dir', r'D:\pre-release\data')
-recording_type = st.selectbox('recording_type', [osp.basename(x) for x in os.listdir(recording_base_dir_)])
+recording_base_dir_ = st.text_input('根目录（无需修改）', r'D:\pre-release\data')
+recording_type = st.selectbox('实验类型', [osp.basename(x) for x in os.listdir(recording_base_dir_)])
 recording_base_dir = osp.join(recording_base_dir_, recording_type)
 recording_name = ""
 try:
-    recording_name = st.selectbox('recording_path', [osp.basename(x) for x in os.listdir(recording_base_dir)])
+    recording_name = st.selectbox('实验名称', [osp.basename(x) for x in os.listdir(recording_base_dir)])
 except FileNotFoundError:
     st.write("No recording found, check recording_base_dir")
     st.stop()
@@ -38,7 +38,7 @@ if os.path.exists(osp.join(recording_base_dir, recording_name, "imu_realsense_al
     try:
         with open(osp.join(recording_base_dir, recording_name, "imu_realsense_alignment.json"), 'r') as f:
             alignment = json.load(f)
-            st.write("Alignment loaded from file")
+            st.write("已经标注，标注结果：")
             st.write(alignment)
     except:
         st.write("Failed to load alignment from file")
@@ -63,13 +63,13 @@ imu_timestamp_max = min([x['timestamp'].max() for x in imu_dataset.recordings.va
 imu_timestamp_min = datetime.datetime.fromtimestamp(imu_timestamp_min / 1e6)
 imu_timestamp_max = datetime.datetime.fromtimestamp(imu_timestamp_max / 1e6)
 
-imu_start_time = st.slider("imu_start_time",
+imu_start_time = st.slider("序列入点",
                            imu_timestamp_min,
                            imu_timestamp_max,
                            imu_timestamp_min if alignment is None else datetime.datetime.fromtimestamp(alignment['imu_start_timestamp_us'] / 1e6),
                            datetime.timedelta(seconds=0.01),
                            format="hh:mm:ss:SS")
-imu_stop_time = st.slider("imu_stop_time",
+imu_stop_time = st.slider("序列出点",
                           imu_timestamp_min,
                           imu_timestamp_max,
                           imu_timestamp_max if alignment is None else datetime.datetime.fromtimestamp(alignment['imu_stop_timestamp_us'] / 1e6),
@@ -82,7 +82,7 @@ imu_stop_timestamp = int(imu_stop_time.timestamp() * 1e6)
 # st.write("imu_start_timestamp", imu_start_timestamp)
 # st.write("imu_stop_timestamp", imu_stop_timestamp)
 
-imu_visualisation_key = st.selectbox("imu_visualisation_key", ['gyro_x', 'gyro_y', 'gyro_z', 'accel_x', 'accel_y', 'accel_z'])
+imu_visualisation_key = st.selectbox("观测指标", ['gyro_x', 'gyro_y', 'gyro_z', 'accel_x', 'accel_y', 'accel_z'])
 clipped_sequences_for_visualisation = {
     "data": {
         k: v[imu_visualisation_key][(v['timestamp'] >= imu_start_timestamp) & (v['timestamp'] <= imu_stop_timestamp)] for k, v in imu_dataset.recordings.items()
@@ -113,10 +113,10 @@ for i in range(len(clipped_sequences_for_visualisation['data'].keys())):
 
 
 st.pyplot(fig)
-realsense_visualization_key = st.selectbox("realsense_visualization_key", list(realsense_dataset.recordings.keys()))
+realsense_visualization_key = st.selectbox("相机视角", list(realsense_dataset.recordings.keys()))
 realsense_timestamps = np.array([int(x.split('_')[1]) for x in realsense_dataset.selected_frames['filenames'][realsense_visualization_key]['color']]) * 1e3 # convert to us
 
-realsense_minus_imu = st.number_input("realsense_minus_imu (s)", -1000., 1000., 0. if alignment is None else alignment['realsense_minus_imu_us'] / 1e6, 0.1) * 1e6
+realsense_minus_imu = st.number_input("相机时钟领先惯性传感器时钟的时间 (秒)", -1000., 1000., 0. if alignment is None else alignment['realsense_minus_imu_us'] / 1e6, 0.1) * 1e6
 
 realsense_start_idx = 0
 realsense_stop_idx = len(realsense_timestamps) - 1
@@ -139,21 +139,21 @@ print(realsense_start_frame_path, realsense_stop_frame_path)
 
 col1, col2 = st.columns(2)
 with col1:
-   st.header("realsense_start")
+   st.header("开始")
    st.image(cv2.cvtColor(cv2.imread(realsense_start_frame_path), cv2.COLOR_BGR2RGB))
    if realsense_start_idx <= 0:
-       st.write("realsense_stop_idx is out of range")
+       st.write("超出范围")
    else:
-       st.write("realsense_start_idx", realsense_start_idx)
+       st.write("起点索引", realsense_start_idx)
 
 
 with col2:
-   st.header("realsense_end")
+   st.header("结束")
    st.image(cv2.cvtColor(cv2.imread(realsense_stop_frame_path), cv2.COLOR_BGR2RGB))
    if realsense_stop_idx >= len(realsense_timestamps):
-       st.write("realsense_stop_idx is out of range")
+       st.write("超出范围")
    else:
-       st.write("realsense_stop_idx", realsense_stop_idx)
+       st.write("结束索引", realsense_stop_idx)
 
 if st.button('Save'):
     with open( osp.join(recording_base_dir, recording_name,"imu_realsense_alignment.json"), "w") as f:

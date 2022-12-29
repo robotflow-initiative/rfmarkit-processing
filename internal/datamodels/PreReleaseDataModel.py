@@ -67,6 +67,7 @@ class PreReleaseRealsenseStreamModel:
     metadata: dict = dataclasses.field(init=False)
     config: dict = dataclasses.field(init=False)
     selected_frames: Optional[dict] = dataclasses.field(init=False)
+    led_tracking_result: Optional[dict] = dataclasses.field(init=False)
     camera_friendly_names = property(lambda self: list(self.path_to_recordings.keys()))
     path_to_cameras = property(lambda self: [osp.join(self.path_to_stream, name) for name in self.camera_friendly_names])
 
@@ -77,6 +78,7 @@ class PreReleaseRealsenseStreamModel:
         self.recordings = {device_id: PreReleaseRealsenseStreamModelPerCamera(path) for device_id, path in zip(camera_friendly_names, path_list)}
         self.path_to_metadata = osp.join(self.path_to_stream, 'metadata_all.json')
         self.path_to_selected_frames = osp.join(self.path_to_stream, 'selected_frames.json')
+        self.path_to_led_tracking_result = osp.join(self.path_to_stream, 'led_tracking_result.json')
         self.path_to_config = osp.join(self.path_to_stream, 'realsense_config.json')
 
     def load(self):
@@ -89,6 +91,14 @@ class PreReleaseRealsenseStreamModel:
                 self.selected_frames = None
         else:
             self.selected_frames = None
+
+        if osp.exists(self.path_to_led_tracking_result):
+            try:
+                self.led_tracking_result = json.load(open(self.path_to_led_tracking_result))
+            except json.decoder.JSONDecodeError:
+                self.led_tracking_result = None
+        else:
+            self.led_tracking_result = None
 
         for camera_friendly_name, item in self.recordings.items():
             if self.selected_frames is not None:

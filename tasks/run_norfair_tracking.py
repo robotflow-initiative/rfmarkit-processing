@@ -56,24 +56,27 @@ def update_tracking_result(result: Dict[str, Dict[str, List[Dict[str, Any]]]],
 
 def run_once(recording_path: str):
     # Norfair
-    detector = OpenCVDetector(thresh=CONFIG_DETECTOR_THRESH,
-                              erode_size=CONFIG_DETECTOR_ERODE_SIZE,
-                              n_erode_iterations=CONFIG_DETECTOR_N_ERODE_ITERATIONS,
-                              n_dilate_iterations=CONFIG_DETECTOR_N_DILATE_ITERATIONS,
-                              blur_size=CONFIG_DETECTOR_BLUR_SIZE,
-                              fg_detection_enabled=CONFIG_FG_DETECTION_ENABLED,
-                              fg_history=CONFIG_FG_HISTORY,
-                              fg_var_threshold=CONFIG_FG_VAR_THRESHOLD)
-    tracker = Tracker(distance_function=euclidean_distance,
-                      distance_threshold=20)
     recording = PreReleaseRecordingModel(recording_path)
     recording.load()
 
     tracking_result = {
         camera_friendly_name: {} for camera_friendly_name in CONFIG_CAMERA_MASK
     }
-
     for name in filter(lambda x: x in recording.realsense_stream.recordings.keys(), CONFIG_CAMERA_MASK):
+        detector = OpenCVDetector(thresh=CONFIG_DETECTOR_THRESH,
+                                  erode_size=CONFIG_DETECTOR_ERODE_SIZE,
+                                  n_erode_iterations=CONFIG_DETECTOR_N_ERODE_ITERATIONS,
+                                  n_dilate_iterations=CONFIG_DETECTOR_N_DILATE_ITERATIONS,
+                                  blur_size=CONFIG_DETECTOR_BLUR_SIZE,
+                                  fg_detection_enabled=CONFIG_FG_DETECTION_ENABLED,
+                                  fg_history=CONFIG_FG_HISTORY,
+                                  fg_var_threshold=CONFIG_FG_VAR_THRESHOLD)
+        tracker = Tracker(distance_function=euclidean_distance,
+                          distance_threshold=20)
+
+
+
+
         video: DirectoryReader = recording.realsense_stream.recordings[name].color
 
         with tqdm.tqdm(total=len(video)) as pbar:
