@@ -116,7 +116,7 @@ st.pyplot(fig)
 realsense_visualization_key = st.selectbox("相机视角", list(realsense_dataset.recordings.keys()))
 realsense_timestamps = np.array([int(x.split('_')[1]) for x in realsense_dataset.selected_frames['filenames'][realsense_visualization_key]['color']]) * 1e3 # convert to us
 
-realsense_minus_imu = st.number_input("相机时钟领先惯性传感器时钟的时间 (秒)", -1000., 1000., 0. if alignment is None else alignment['realsense_minus_imu_us'] / 1e6, 0.1) * 1e6
+realsense_minus_imu = st.number_input("上图比下图领先的时间 (秒)", -1000., 1000., 0. if alignment is None else alignment['realsense_minus_imu_us'] / 1e6, 0.1) * 1e6
 
 realsense_start_idx = 0
 realsense_stop_idx = len(realsense_timestamps) - 1
