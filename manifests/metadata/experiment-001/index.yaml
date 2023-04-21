@@ -1,0 +1,427 @@
+articulated_kit:
+  base_dir: D:\articulated_pc\experiment-001
+  debug: false
+  imu_friendly_name_mapping:
+    A-1: 782184507cf8
+    A-2: 30c6f751c998
+    A-3: 78218450b200
+    A-4: e89f6d75c1e4
+    A-5: e89f6d75bbb0
+    A-6: e89f6d75f978
+    A-7: e89f6d749624
+    B-1: e89f6d75b83c
+    B-2: e89f6d74a5a0
+    B-3: 30c6f751c74c
+    B-4: e89f6d75fcc4
+  name: experiment-001
+  realsense_friendly_name_mapping:
+    L-1: f0271808
+    L-2: '011422071122'
+    R-1: f0220485
+    R-2: '135122079769'
+  realsense_recorder_endpoint: http://localhost:5050
+  targets:
+  - associated_calibration: _cali-1
+    finished: true
+    imu_dependency: []
+    recordings:
+    - bottle-014-1
+    tag: bottle-014
+    uuid: bc37271d-7297-11ed-b222-a8a159b5934c
+  - associated_calibration: _cali-1
+    finished: true
+    imu_dependency: []
+    recordings:
+    - bottle-015-1
+    tag: bottle-015
+    uuid: bc37271e-7297-11ed-ac00-a8a159b5934c
+  - associated_calibration: _cali-1
+    finished: true
+    imu_dependency: []
+    recordings:
+    - bottle-017-1
+    tag: bottle-017
+    uuid: bc37271f-7297-11ed-8a6a-a8a159b5934c
+  - associated_calibration: _cali-1
+    finished: true
+    imu_dependency: []
+    recordings:
+    - bottle-018-1
+    tag: bottle-018
+    uuid: bc372720-7297-11ed-9af4-a8a159b5934c
+  - associated_calibration: _cali-1
+    finished: true
+    imu_dependency: []
+    recordings:
+    - bottle-023-1
+    tag: bottle-023
+    uuid: bc372721-7297-11ed-a5d9-a8a159b5934c
+  - associated_calibration: _cali-1
+    finished: true
+    imu_dependency: []
+    recordings:
+    - bottle-028-1
+    tag: bottle-028
+    uuid: bc372722-7297-11ed-b566-a8a159b5934c
+  - associated_calibration: _cali-1
+    finished: true
+    imu_dependency: []
+    recordings:
+    - bottle-031-1
+    - bottle-031-2
+    tag: bottle-031
+    uuid: bc372723-7297-11ed-81a1-a8a159b5934c
+  - associated_calibration: _cali-1
+    finished: true
+    imu_dependency: []
+    recordings:
+    - box-005-1
+    - box-005-2
+    tag: box-005
+    uuid: bc372724-7297-11ed-9178-a8a159b5934c
+  - associated_calibration: _cali-1
+    finished: true
+    imu_dependency: []
+    recordings:
+    - box-024-1
+    tag: box-024
+    uuid: bc372725-7297-11ed-a40d-a8a159b5934c
+  - associated_calibration: _cali-1
+    finished: true
+    imu_dependency: []
+    recordings:
+    - box-026-1
+    tag: box-026
+    uuid: bc372726-7297-11ed-b4c7-a8a159b5934c
+  - associated_calibration: _cali-1
+    finished: true
+    imu_dependency: []
+    recordings:
+    - box-027-1
+    tag: box-027
+    uuid: bc372727-7297-11ed-9d02-a8a159b5934c
+  - associated_calibration: _cali-2
+    finished: true
+    imu_dependency: []
+    recordings:
+    - box-033-1
+    - box-033-2
+    - box-033-3
+    tag: box-033
+    uuid: bc372728-7297-11ed-82ad-a8a159b5934c
+  - associated_calibration: _cali-1
+    finished: true
+    imu_dependency: []
+    recordings:
+    - bucket-004-1
+    tag: bucket-004
+    uuid: bc372729-7297-11ed-8999-a8a159b5934c
+  - associated_calibration: _cali-1
+    finished: true
+    imu_dependency: []
+    recordings:
+    - bucket-019-1
+    - bucket-019-2
+    tag: bucket-019
+    uuid: bc37272a-7297-11ed-a716-a8a159b5934c
+  - associated_calibration: _cali-2
+    finished: true
+    imu_dependency: []
+    recordings:
+    - bucket-021-1
+    - bucket-021-2
+    tag: bucket-021
+    uuid: bc37272b-7297-11ed-bb16-a8a159b5934c
+  - associated_calibration: _cali-2
+    finished: true
+    imu_dependency: []
+    recordings:
+    - bucket-022-1
+    - bucket-022-2
+    - bucket-022-3
+    tag: bucket-022
+    uuid: bc37272c-7297-11ed-ae28-a8a159b5934c
+  - associated_calibration: _cali-1
+    finished: true
+    imu_dependency: []
+    recordings:
+    - bucket-057-1
+    tag: bucket-057
+    uuid: bc37272d-7297-11ed-9602-a8a159b5934c
+  - associated_calibration: _cali-1
+    finished: true
+    imu_dependency: []
+    recordings:
+    - clip-009-1
+    tag: clip-009
+    uuid: bc37272e-7297-11ed-9ac3-a8a159b5934c
+  - associated_calibration: _cali-1
+    finished: true
+    imu_dependency: []
+    recordings:
+    - clip-029-1
+    tag: clip-029
+    uuid: bc37272f-7297-11ed-bc35-a8a159b5934c
+  - associated_calibration: _cali-1
+    finished: true
+    imu_dependency: []
+    recordings:
+    - clip-032-1
+    tag: clip-032
+    uuid: bc372730-7297-11ed-975e-a8a159b5934c
+  - associated_calibration: _cali-1
+    finished: true
+    imu_dependency: []
+    recordings:
+    - clip-036-1
+    tag: clip-036
+    uuid: bc372731-7297-11ed-9773-a8a159b5934c
+  - associated_calibration: _cali-1
+    finished: true
+    imu_dependency: []
+    recordings:
+    - clip-042-1
+    tag: clip-042
+    uuid: bc372732-7297-11ed-82ed-a8a159b5934c
+  - associated_calibration: _cali-2
+    finished: true
+    imu_dependency: []
+    recordings:
+    - cup-007-1
+    - cup-007-2
+    tag: cup-007
+    uuid: bc372733-7297-11ed-880b-a8a159b5934c
+  - associated_calibration: _cali-2
+    finished: true
+    imu_dependency: []
+    recordings:
+    - cup-030-1
+    - cup-030-2
+    tag: cup-030
+    uuid: bc372734-7297-11ed-b13e-a8a159b5934c
+  - associated_calibration: _cali-2
+    finished: true
+    imu_dependency: []
+    recordings:
+    - cup-044-1
+    - cup-044-2
+    tag: cup-044
+    uuid: bc372735-7297-11ed-9fa1-a8a159b5934c
+  - associated_calibration: _cali-2
+    finished: true
+    imu_dependency: []
+    recordings:
+    - cup-045-1
+    tag: cup-045
+    uuid: bc372736-7297-11ed-93db-a8a159b5934c
+  - associated_calibration: _cali-2
+    finished: true
+    imu_dependency: []
+    recordings:
+    - drawer-001-1
+    - drawer-001-2
+    tag: drawer-001
+    uuid: bc372737-7297-11ed-a357-a8a159b5934c
+  - associated_calibration: _cali-2
+    finished: true
+    imu_dependency: []
+    recordings:
+    - drawer-003-1
+    - drawer-003-2
+    - drawer-003-3
+    - drawer-003-4
+    tag: drawer-003
+    uuid: bc372738-7297-11ed-a756-a8a159b5934c
+  - associated_calibration: _cali-2
+    finished: true
+    imu_dependency: []
+    recordings:
+    - drawer-006-1
+    tag: drawer-006
+    uuid: bc372739-7297-11ed-86ee-a8a159b5934c
+  - associated_calibration: _cali-2
+    finished: true
+    imu_dependency: []
+    recordings:
+    - drawer-010-1
+    - drawer-010-2
+    tag: drawer-010
+    uuid: bc37273a-7297-11ed-938f-a8a159b5934c
+  - associated_calibration: _cali-2
+    finished: true
+    imu_dependency: []
+    recordings:
+    - drawer-020-1
+    tag: drawer-020
+    uuid: bc37273b-7297-11ed-98cc-a8a159b5934c
+  - associated_calibration: _cali-2
+    finished: true
+    imu_dependency: []
+    recordings:
+    - eyeglasses-039-1
+    - eyeglasses-039-2
+    - eyeglasses-039-3
+    tag: eyeglasses-039
+    uuid: bc37273c-7297-11ed-85b6-a8a159b5934c
+  - associated_calibration: _cali-2
+    finished: true
+    imu_dependency: []
+    recordings:
+    - eyeglasses-040-1
+    tag: eyeglasses-040
+    uuid: bc37273d-7297-11ed-8e27-a8a159b5934c
+  - associated_calibration: _cali-2
+    finished: true
+    imu_dependency: []
+    recordings:
+    - eyeglasses-049-1
+    - eyeglasses-049-2
+    tag: eyeglasses-049
+    uuid: bc37273e-7297-11ed-9219-a8a159b5934c
+  - associated_calibration: _cali-2
+    finished: true
+    imu_dependency: []
+    recordings:
+    - eyeglasses-050-1
+    - eyeglasses-050-2
+    tag: eyeglasses-050
+    uuid: bc37273f-7297-11ed-aa89-a8a159b5934c
+  - associated_calibration: _cali-2
+    finished: true
+    imu_dependency: []
+    recordings:
+    - eyeglasses-051-1
+    tag: eyeglasses-051
+    uuid: bc372740-7297-11ed-99ec-a8a159b5934c
+  - associated_calibration: _cali-2
+    finished: true
+    imu_dependency: []
+    recordings:
+    - faucet-038-1
+    - faucet-038-2
+    tag: faucet-038
+    uuid: bc372741-7297-11ed-915c-a8a159b5934c
+  - associated_calibration: _cali-2
+    finished: true
+    imu_dependency: []
+    recordings:
+    - faucet-043-1
+    - faucet-043-2
+    tag: faucet-043
+    uuid: bc372742-7297-11ed-9dd9-a8a159b5934c
+  - associated_calibration: _cali-2
+    finished: true
+    imu_dependency: []
+    recordings:
+    - faucet-046-1
+    tag: faucet-046
+    uuid: bc372743-7297-11ed-b5b0-a8a159b5934c
+  - associated_calibration: _cali-2
+    finished: true
+    imu_dependency: []
+    recordings:
+    - faucet-047-1
+    tag: faucet-047
+    uuid: bc372744-7297-11ed-bf67-a8a159b5934c
+  - associated_calibration: _cali-2
+    finished: true
+    imu_dependency: []
+    recordings:
+    - faucet-048-1
+    - faucet-048-2
+    tag: faucet-048
+    uuid: bc372745-7297-11ed-a294-a8a159b5934c
+  - associated_calibration: _cali-2
+    finished: true
+    imu_dependency: []
+    recordings:
+    - misc-011-1
+    tag: misc-011
+    uuid: bc372746-7297-11ed-bbc4-a8a159b5934c
+  - associated_calibration: _cali-2
+    finished: true
+    imu_dependency: []
+    recordings:
+    - misc-016-1
+    - misc-016-2
+    tag: misc-016
+    uuid: bc372747-7297-11ed-bc76-a8a159b5934c
+  - associated_calibration: _cali-2
+    finished: true
+    imu_dependency: []
+    recordings:
+    - misc-025-1
+    - misc-025-2
+    tag: misc-025
+    uuid: bc372748-7297-11ed-a64e-a8a159b5934c
+  - associated_calibration: _cali-2
+    finished: true
+    imu_dependency: []
+    recordings:
+    - scissors-037-1
+    - scissors-037-2
+    - scissors-037-3
+    - scissors-037-4
+    - scissors-037-5
+    - scissors-037-6
+    tag: scissors-037
+    uuid: bc372749-7297-11ed-ae16-a8a159b5934c
+  - associated_calibration: _cali-2
+    finished: true
+    imu_dependency: []
+    recordings:
+    - scissors-052-1
+    tag: scissors-052
+    uuid: bc37274a-7297-11ed-a210-a8a159b5934c
+  - associated_calibration: _cali-2
+    finished: true
+    imu_dependency: []
+    recordings:
+    - scissors-053-1
+    tag: scissors-053
+    uuid: bc37274b-7297-11ed-8e02-a8a159b5934c
+  - associated_calibration: _cali-2
+    finished: true
+    imu_dependency: []
+    recordings:
+    - scissors-054-1
+    - scissors-054-2
+    tag: scissors-054
+    uuid: bc37274c-7297-11ed-9771-a8a159b5934c
+  - associated_calibration: _cali-2
+    finished: true
+    imu_dependency: []
+    recordings:
+    - stapler-013-1
+    - stapler-013-2
+    tag: stapler-013
+    uuid: bc37274d-7297-11ed-a4a3-a8a159b5934c
+  - associated_calibration: _cali-2
+    finished: true
+    imu_dependency: []
+    recordings:
+    - stapler-034-1
+    tag: stapler-034
+    uuid: bc37274e-7297-11ed-ad7a-a8a159b5934c
+  - associated_calibration: _cali-2
+    finished: true
+    imu_dependency: []
+    recordings:
+    - stapler-035-1
+    tag: stapler-035
+    uuid: bc37274f-7297-11ed-9a93-a8a159b5934c
+  - associated_calibration: _cali-2
+    finished: true
+    imu_dependency: []
+    recordings:
+    - stapler-055-1
+    tag: stapler-055
+    uuid: bc372750-7297-11ed-b9b3-a8a159b5934c
+  - associated_calibration: _cali-2
+    finished: true
+    imu_dependency: []
+    recordings:
+    - stapler-056-1
+    tag: stapler-056
+    uuid: bc372751-7297-11ed-a424-a8a159b5934c
+  tcpbroker_endpoint: http://localhost:18889

@@ -1,0 +1,13 @@
+imu:
+  api_port: 18889
+  base_dir: D:\articulated_pc\experiment-002\
+  data_addr: 0.0.0.0
+  data_port: 18888
+  debug: true
+  enable_gui: false
+  render_packet: true
+  update_interval_s: 0.1
+  imu_addresses: ["10.233.233.0/24"]
+  imu_port: 18888
+  n_procs: 4
+  tcp_buff_sz: 1024

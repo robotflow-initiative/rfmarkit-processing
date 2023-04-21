@@ -6,7 +6,7 @@ import tqdm
 
 from internal.detector import OpenCVDetector
 from realsense_recorder.io import get_directory_reader, DirectoryReader
-from internal.datamodels import PreReleaseRecordingModel
+from internal.datamodels import RecordingModel
 
 
 def _detection_job(d: OpenCVDetector, reader: DirectoryReader):
@@ -47,7 +47,7 @@ if __name__ == '__main__':
     # INPUT: MEASUREMENT_DIR
     # OUTPUT: analyse_results
 
-    recording = PreReleaseRecordingModel(CONFIG_RECORDING_DIR)
+    recording = RecordingModel(CONFIG_RECORDING_DIR)
     recording.load()
     Det = OpenCVDetector(thresh=CONFIG_DETECTOR_THRESH,
                          erode_size=CONFIG_DETECTOR_ERODE_SIZE,

@@ -8,7 +8,7 @@ import tqdm
 from norfair import Tracker, draw_tracked_objects, Detection
 from realsense_recorder.io import DirectoryReader
 
-from internal.datamodels import PreReleaseRecordingModel
+from internal.datamodels import RecordingModel
 from internal.detector import OpenCVDetector
 
 # Hyper parameters
@@ -65,7 +65,7 @@ def run_once(recording_path: str):
                               fg_var_threshold=CONFIG_FG_VAR_THRESHOLD)
     tracker = Tracker(distance_function=euclidean_distance,
                       distance_threshold=20)
-    recording = PreReleaseRecordingModel(recording_path)
+    recording = RecordingModel(recording_path)
     recording.load()
 
     tracking_result = {

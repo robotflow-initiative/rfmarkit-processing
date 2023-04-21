@@ -1,8 +1,4 @@
-import json
-import math
-
 import numpy as np
-import scipy
 import transforms3d as t3d
 import matplotlib.pyplot as plt
 from scipy import signal

@@ -2,7 +2,7 @@ import os.path as osp
 import sys
 
 sys.path.append('.')
-from internal.datamodels import PreReleaseIMUStreamModel, PreReleaseRealsenseStreamModel
+from internal.datamodels import IMUStreamModel, RealsenseStreamModel
 import streamlit as st
 import yaml
 import cv2
@@ -23,7 +23,7 @@ recording_name = list(map(lambda x: x['recordings'][0], dataset_metadata_raw['ar
 st.write("recording_name:", recording_name)
 recording_path = osp.join(dataset_base_dir, 'data', dataset_type, recording_name)
 
-imu_stream_model = PreReleaseIMUStreamModel(osp.join(recording_path, 'imu'))
+imu_stream_model = IMUStreamModel(osp.join(recording_path, 'imu'))
 imu_stream_model.load()
 imu_toggled = list(map(lambda x: imu_friendly_name_reverse_mapping[x], imu_stream_model.path_to_recordings.keys()))
 
@@ -48,7 +48,7 @@ else:
 print(imu_dependency)
 print(imu_toggled)
 print(dataset_metadata_raw['articulated_kit']['targets'][recording_index]['imu_dependency'])
-realsense_stream_model = PreReleaseRealsenseStreamModel(osp.join(recording_path, 'realsense'))
+realsense_stream_model = RealsenseStreamModel(osp.join(recording_path, 'realsense'))
 realsense_stream_model.load()
 realsense_visualization_key = st.selectbox("realsense_visualization_key", realsense_stream_model.camera_friendly_names)
 num_of_frames = len(realsense_stream_model.selected_frames['filenames'][realsense_visualization_key]['color'])

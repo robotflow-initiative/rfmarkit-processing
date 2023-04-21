@@ -4,7 +4,7 @@ import numpy as np
 import streamlit as st
 
 sys.path.append('.')
-from internal.datamodels import PreReleaseIMUStreamModel, PreReleaseRealsenseStreamModel
+from internal.datamodels import IMUStreamModel, RealsenseStreamModel
 import os.path as osp
 import os
 import cv2
@@ -46,8 +46,8 @@ if osp.exists(reid_path):
 else:
     current_reid_mapping = None
 
-imu_dataset = PreReleaseIMUStreamModel(imu_path)
-realsense_dataset = PreReleaseRealsenseStreamModel(realsense_path)
+imu_dataset = IMUStreamModel(imu_path)
+realsense_dataset = RealsenseStreamModel(realsense_path)
 realsense_dataset.load()
 imu_dataset.load()
 dataset_metadata_raw = yaml.load(open(osp.join(recording_base_dir_, "../metadata", recording_type, "index.yaml"), "r"), Loader=yaml.SafeLoader)['articulated_kit']

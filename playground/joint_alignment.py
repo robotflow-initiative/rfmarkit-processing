@@ -4,7 +4,7 @@ import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
 sys.path.append('.')
-from internal.datamodels import PreReleaseIMUStreamModel, PreReleaseRealsenseStreamModel
+from internal.datamodels import IMUStreamModel, RealsenseStreamModel
 import os.path as osp
 import os
 import cv2
@@ -30,8 +30,8 @@ except FileNotFoundError:
 
 imu_path = osp.join(recording_base_dir, recording_name, "imu")
 realsense_path = osp.join(recording_base_dir, recording_name, "realsense")
-imu_dataset = PreReleaseIMUStreamModel(imu_path)
-realsense_dataset = PreReleaseRealsenseStreamModel(realsense_path)
+imu_dataset = IMUStreamModel(imu_path)
+realsense_dataset = RealsenseStreamModel(realsense_path)
 
 alignment = None
 if os.path.exists(osp.join(recording_base_dir, recording_name, "imu_realsense_alignment.json")):

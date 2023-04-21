@@ -6,3 +6,11 @@ tqdm
 scipy
 streamlit
 rich
+pupil_apriltags
+open3d
+# ui
+requests
+python-multipart
+fastapi
+uvicorn
+transforms3d

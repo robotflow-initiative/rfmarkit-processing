@@ -1,0 +1,20 @@
+name: default
+imu_friendly_name_mapping:
+  A-1: 782184507cf8
+  A-2: 30c6f751c998
+  A-3: 78218450b200
+  A-4: e89f6d75c1e4
+  A-5: e89f6d75bbb0
+  A-6: e89f6d75f978
+  A-7: e89f6d749624
+  B-1: e89f6d75b83c
+  B-2: e89f6d74a5a0
+  B-3: 30c6f751c74c
+  B-4: e89f6d75fcc4
+realsense_friendly_name_mapping:
+  R-2: "135122079769"
+  L-2: "011422071122"
+  R-1: "f0220485"
+  L-1: "f0271808"
+base_dir: "D:/articulated_pc"
+targets: []

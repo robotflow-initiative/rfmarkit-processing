@@ -1,0 +1,340 @@
+articulated_kit:
+  name: experiment-001
+  realsense_recorder_endpoint: http://localhost:5050
+  tcpbroker_endpoint: http://localhost:18889
+  imu_friendly_name_mapping:
+    A-1: 782184507cf8
+    A-2: 30c6f751c998
+    A-3: 78218450b200
+    A-4: e89f6d75c1e4
+    A-5: e89f6d75bbb0
+    A-6: e89f6d75f978
+    A-7: e89f6d749624
+    B-1: e89f6d75b83c
+    B-2: e89f6d74a5a0
+    B-3: 30c6f751c74c
+    B-4: e89f6d75fcc4
+  realsense_friendly_name_mapping:
+    L-1: f0271808
+    L-2: '011422071122'
+  base_dir: D:\articulated_pc\experiment-002
+  debug: false
+  targets:
+  - tag: bottle-014.jpg
+    uuid: 1045dd04-7380-11ed-bb13-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: bottle-015.jpg
+    uuid: 1045dd05-7380-11ed-a9cb-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: bottle-017.jpg
+    uuid: 1045dd06-7380-11ed-94d4-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: bottle-018.jpg
+    uuid: 1045dd07-7380-11ed-9dbe-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: bottle-023.jpg
+    uuid: 1045dd08-7380-11ed-88b7-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: bottle-028.jpg
+    uuid: 1045dd09-7380-11ed-94df-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: bottle-031.jpg
+    uuid: 1045dd0a-7380-11ed-9d8b-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: box-005.jpg
+    uuid: 1045dd0b-7380-11ed-a198-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: box-024.jpg
+    uuid: 1045dd0c-7380-11ed-867d-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: box-026.jpg
+    uuid: 1045dd0d-7380-11ed-b621-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: box-027.jpg
+    uuid: 1045dd0e-7380-11ed-ba15-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: box-033.jpg
+    uuid: 1045dd0f-7380-11ed-9944-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: bucket-004.jpg
+    uuid: 1045dd10-7380-11ed-a985-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: bucket-019.jpg
+    uuid: 1045dd11-7380-11ed-a364-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: bucket-021.jpg
+    uuid: 1045dd12-7380-11ed-b0d6-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: bucket-022.jpg
+    uuid: 1045dd13-7380-11ed-86ea-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: bucket-057.jpg
+    uuid: 1045dd14-7380-11ed-96af-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: clip-009.jpg
+    uuid: 1045dd15-7380-11ed-aa85-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: clip-029.jpg
+    uuid: 1045dd16-7380-11ed-abf0-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: clip-032.jpg
+    uuid: 1045dd17-7380-11ed-9217-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: clip-036.jpg
+    uuid: 1045dd18-7380-11ed-bf1c-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: clip-042.jpg
+    uuid: 1045dd19-7380-11ed-be1b-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: cup-007.jpg
+    uuid: 1045dd1a-7380-11ed-8a69-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: cup-030.jpg
+    uuid: 1045dd1b-7380-11ed-9d82-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: cup-044.jpg
+    uuid: 1045dd1c-7380-11ed-badb-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: cup-045.jpg
+    uuid: 1045dd1d-7380-11ed-86d8-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: drawer-001.jpg
+    uuid: 1045dd1e-7380-11ed-bfa8-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: drawer-003.jpg
+    uuid: 1045dd1f-7380-11ed-a126-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: drawer-006.jpg
+    uuid: 1045dd20-7380-11ed-8ba2-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: drawer-010.jpg
+    uuid: 1045dd21-7380-11ed-af7b-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: drawer-020.jpg
+    uuid: 1045dd22-7380-11ed-a3a2-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: eyeglasses-039.jpg
+    uuid: 1045dd23-7380-11ed-84e4-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: eyeglasses-040.jpg
+    uuid: 1045dd24-7380-11ed-b194-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: eyeglasses-049.jpg
+    uuid: 1045dd25-7380-11ed-845f-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: eyeglasses-050.jpg
+    uuid: 1045dd26-7380-11ed-b58b-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: eyeglasses-051.jpg
+    uuid: 1045dd27-7380-11ed-a15e-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: faucet-038.jpg
+    uuid: 1045dd28-7380-11ed-b2ee-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: faucet-043.jpg
+    uuid: 1045dd29-7380-11ed-ae19-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: faucet-046.jpg
+    uuid: 1045dd2a-7380-11ed-b7ce-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: faucet-047.jpg
+    uuid: 1045dd2b-7380-11ed-84f6-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: faucet-048.jpg
+    uuid: 1045dd2c-7380-11ed-890b-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: misc-011.jpg
+    uuid: 1045dd2d-7380-11ed-b705-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: misc-016.jpg
+    uuid: 1045dd2e-7380-11ed-9bd4-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: misc-025.jpg
+    uuid: 1045dd2f-7380-11ed-b708-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: scissors-037.jpg
+    uuid: 1045dd30-7380-11ed-b9ab-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: scissors-052.jpg
+    uuid: 1045dd31-7380-11ed-a32c-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: scissors-053.jpg
+    uuid: 1045dd32-7380-11ed-b923-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: scissors-054.jpg
+    uuid: 1045dd33-7380-11ed-9647-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: stapler-013.jpg
+    uuid: 1045dd34-7380-11ed-8122-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: stapler-034.jpg
+    uuid: 1045dd35-7380-11ed-b28a-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: stapler-035.jpg
+    uuid: 1045dd36-7380-11ed-bd4c-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: stapler-055.jpg
+    uuid: 1045dd37-7380-11ed-bb1e-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null
+  - tag: stapler-056.jpg
+    uuid: 1045dd38-7380-11ed-91fc-a8a159b5934c
+    finished: false
+    imu_dependency: []
+    recordings: []
+    associated_calibration: null

@@ -1,0 +1,43 @@
+realsense:
+  cameras:
+  - color:
+    - exposure: 10
+      format: rs.format.bgra8
+      fps: 30
+      height: 720
+      width: 1280
+    depth:
+    - format: rs.format.z16
+      fps: 30
+      height: 480
+      preset: Default
+      width: 848
+    endpoint: {}
+    product_id: 0B07
+    product_line: D400
+    ref: 1
+    sn: '011422071122'
+  - color:
+    - exposure: -1
+      format: rs.format.bgra8
+      fps: 30
+      height: 720
+      width: 1280
+    depth:
+    - format: rs.format.z16
+      fps: 30
+      height: 768
+      preset: Short Range
+      width: 1024
+    endpoint: {}
+    imu: []
+    product_id: 0B64
+    product_line: L500
+    ref: 3
+    sn: f0271808
+  system:
+    base_dir: D:\articulated_pc\experiment-002\
+    frame_queue_size: 1000
+    interactive: false
+    interval_ms: 10
+    use_bag: false

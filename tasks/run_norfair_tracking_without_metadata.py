@@ -11,7 +11,7 @@ from norfair import Tracker, draw_tracked_objects, Detection
 from realsense_recorder.io import DirectoryReader, get_directory_reader
 from rich.console import Console
 
-from internal.datamodels import PreReleaseRecordingModel
+from internal.datamodels import RecordingModel
 from internal.detector import OpenCVDetector
 
 # Hyper parameters

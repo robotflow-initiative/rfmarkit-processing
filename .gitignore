@@ -25,5 +25,9 @@ events.*
 *.json
 *.code-workspace
 *.ipynb_checkoints
-
+*.log
+*.bag
+*_data
+*.egg-info
+*.jpg
 

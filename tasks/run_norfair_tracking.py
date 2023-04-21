@@ -11,7 +11,7 @@ from norfair import Tracker, draw_tracked_objects, Detection
 from realsense_recorder.io import DirectoryReader
 from rich.console import Console
 
-from internal.datamodels import PreReleaseRecordingModel
+from internal.datamodels import RecordingModel
 from internal.detector import OpenCVDetector
 
 # Hyper parameters
@@ -56,7 +56,7 @@ def update_tracking_result(result: Dict[str, Dict[str, List[Dict[str, Any]]]],
 
 def run_once(recording_path: str):
     # Norfair
-    recording = PreReleaseRecordingModel(recording_path)
+    recording = RecordingModel(recording_path)
     recording.load()
 
     tracking_result = {
@@ -73,9 +73,6 @@ def run_once(recording_path: str):
                                   fg_var_threshold=CONFIG_FG_VAR_THRESHOLD)
         tracker = Tracker(distance_function=euclidean_distance,
                           distance_threshold=20)
-
-
-
 
         video: DirectoryReader = recording.realsense_stream.recordings[name].color
 
