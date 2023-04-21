@@ -8,8 +8,8 @@ import tqdm
 from norfair import Tracker, draw_tracked_objects, Detection
 from realsense_recorder.io import DirectoryReader
 
-from internal.datamodels import RecordingModel
-from internal.detector import OpenCVDetector
+from articulated_processing.datamodels import RecordingModel
+from articulated_processing.detector import OpenCVDetector
 
 # Hyper parameters
 CONFIG_DETECTOR_BLUR_SIZE = 3  # Filter with cv2.GaussianBlur for better thresh segmentation

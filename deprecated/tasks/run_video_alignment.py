@@ -10,7 +10,7 @@ from rich.console import Console
 
 console: Optional[Console] = None
 
-from internal.datamodels.DataModel import RecordingModel
+from articulated_processing.datamodels.DataModel import RecordingModel
 
 METHOD: Optional[str] = None
 

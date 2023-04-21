@@ -1,0 +1,20 @@
+articulated:
+  name: default
+  imu_entities:
+    - friendly_name: <string> # e.g. A-1
+      device_id: <string> # e.g. 782184507cf8
+      marker_id: <int> # e.g. 0
+
+  realsense_entities:
+    - friendly_name: <string> # e.g. R-1
+      device_id: <string> # e.g. f0220485
+      role: <L|R> # e.g. R-1, R-2, L-1, L-2
+      type: <D435|L515> # e.g. D435, L515
+
+  base_dir: <string> # e.g. D:/articulated_pc
+
+  endpoints:
+    realsense: <string> # e.g. http://localhost:5050
+    tcpbroker: <string> # e.g. http://localhost:18889
+
+  targets: [ ]

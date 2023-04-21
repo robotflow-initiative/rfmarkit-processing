@@ -1,4 +1,4 @@
-articulated_kit:
+articulated:
   base_dir: D:/articulated_pc/experiment-002
   debug: false
   imu_friendly_name_mapping:

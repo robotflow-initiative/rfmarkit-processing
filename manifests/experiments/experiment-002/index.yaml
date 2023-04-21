@@ -1,4 +1,4 @@
-articulated_kit:
+articulated:
   name: experiment-001
   realsense_recorder_endpoint: http://localhost:5050
   tcpbroker_endpoint: http://localhost:18889

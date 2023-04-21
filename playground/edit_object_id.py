@@ -4,7 +4,7 @@ import numpy as np
 import streamlit as st
 
 sys.path.append('.')
-from internal.datamodels import IMUStreamModel, RealsenseStreamModel
+from articulated_processing.datamodels import IMUStreamModel, RealsenseStreamModel
 import os.path as osp
 import os
 import cv2
@@ -50,7 +50,7 @@ imu_dataset = IMUStreamModel(imu_path)
 realsense_dataset = RealsenseStreamModel(realsense_path)
 realsense_dataset.load()
 imu_dataset.load()
-dataset_metadata_raw = yaml.load(open(osp.join(recording_base_dir_, "../metadata", recording_type, "index.yaml"), "r"), Loader=yaml.SafeLoader)['articulated_kit']
+dataset_metadata_raw = yaml.load(open(osp.join(recording_base_dir_, "../metadata", recording_type, "index.yaml"), "r"), Loader=yaml.SafeLoader)['articulated']
 candidate_imu_device_ids = list(imu_dataset.recordings.keys())
 candidate_imu_device_friendly_names = ["-"]
 candidate_imu_device_friendly_names += list(filter(lambda x: dataset_metadata_raw['imu_friendly_name_mapping'][x] in candidate_imu_device_ids, dataset_metadata_raw['imu_friendly_name_mapping']))
