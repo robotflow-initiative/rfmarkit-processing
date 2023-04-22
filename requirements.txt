@@ -14,3 +14,4 @@ python-multipart
 fastapi
 uvicorn
 transforms3d
+py-cli-interaction

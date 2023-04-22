@@ -4,11 +4,11 @@ import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
 sys.path.append('.')
-from articulated_processing.datamodels import IMUStreamModel, RealsenseStreamModel
+from markit_processing.datamodels import IMUStreamModel, RealsenseStreamModel
 import os.path as osp
 import os
 import cv2
-from articulated_processing.utils.algorithm import IMUAlgorithm
+from markit_processing.utils.algorithm import IMUAlgorithm
 import datetime
 import json
 

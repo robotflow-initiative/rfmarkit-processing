@@ -9,7 +9,7 @@ import tqdm
 from norfair import Detection
 from realsense_recorder.io import get_directory_reader
 
-from articulated_processing.detector import OpenCVDetector
+from markit_processing.detector import OpenCVDetector
 
 # Hyper parameters
 CONFIG_DETECTOR_BLUR_SIZE = 3  # Filter with cv2.GaussianBlur for better thresh segmentation

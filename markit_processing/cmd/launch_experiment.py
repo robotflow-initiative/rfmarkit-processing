@@ -11,8 +11,8 @@ import time
 
 import cv2
 import yaml
-from articulated_processing.client import RealsenseRecorderClient, TcpBrokerClient
-from articulated_processing.cmd.model import DefaultExperiment
+from markit_processing.client import RealsenseRecorderClient, TcpBrokerClient
+from markit_processing.cmd.model import DefaultExperiment
 from py_cli_interaction import must_parse_cli_sel
 from rich.console import Console
 from rich.progress import track
@@ -165,16 +165,16 @@ class ExperimentConsole(cmd.Cmd):
         realsense_recorder_client = RealsenseRecorderClient(base_url=self.experiment.realsense_recorder_endpoint, timeout=5, verify_ssl=False)
         tcpbroker_client = TcpBrokerClient(base_url=self.experiment.tcpbroker_endpoint, timeout=5, verify_ssl=False)
 
-        from articulated_processing.client.realsense_recorder.api.default import status_v1_status_get as realsense_recorder_status
-        from articulated_processing.client.realsense_recorder.api.default import stop_process_v1_stop_post as realsense_recorder_stop
-        from articulated_processing.client.realsense_recorder.api.default import start_process_v1_start_post as realsense_recorder_start
-        from articulated_processing.client.realsense_recorder.api.default import ready_v1_ready_get as realsense_recorder_ready
+        from markit_processing.client.realsense_recorder.api.default import status_v1_status_get as realsense_recorder_status
+        from markit_processing.client.realsense_recorder.api.default import stop_process_v1_stop_post as realsense_recorder_stop
+        from markit_processing.client.realsense_recorder.api.default import start_process_v1_start_post as realsense_recorder_start
+        from markit_processing.client.realsense_recorder.api.default import ready_v1_ready_get as realsense_recorder_ready
 
-        from articulated_processing.client.tcpbroker.api.default import status_v1_status_get as tcpbroker_status
-        from articulated_processing.client.tcpbroker.api.default import stop_process_v1_stop_post as tcpbroker_stop
-        from articulated_processing.client.tcpbroker.api.default import start_process_v1_start_post as tcpbroker_start
-        from articulated_processing.client.tcpbroker.api.default import imu_control_v1_imu_control_post as tcpbroker_control
-        from articulated_processing.client.tcpbroker.api.default import imu_connection_v1_imu_connection_get as tcpbroker_connection
+        from markit_processing.client.tcpbroker.api.default import status_v1_status_get as tcpbroker_status
+        from markit_processing.client.tcpbroker.api.default import stop_process_v1_stop_post as tcpbroker_stop
+        from markit_processing.client.tcpbroker.api.default import start_process_v1_start_post as tcpbroker_start
+        from markit_processing.client.tcpbroker.api.default import imu_control_v1_imu_control_post as tcpbroker_control
+        from markit_processing.client.tcpbroker.api.default import imu_connection_v1_imu_connection_get as tcpbroker_connection
 
         while True:
             try:

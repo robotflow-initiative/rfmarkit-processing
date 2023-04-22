@@ -1,3 +1,3 @@
-# imu-articulated-processing
+# markit-processing
 
-Code for post processing data from [mvig-robotflow/rfimu-esp-node](https://github.com/mvig-robotflow/rfimu-esp-node) and [mvig-robotflow/rfimu-realsense-recorder](https://github.com/mvig-robotflow/rfimu-realsense-recorder)
+Code for post processing data from [mvig-robotflow/rfmarkit-gateway](https://github.com/mvig-robotflow/rfmarkit-gateway) and [mvig-robotflow/rfmarkit-rs-recorder](https://github.com/mvig-robotflow/rfmarkit-rs-recorder)

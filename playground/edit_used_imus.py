@@ -2,7 +2,7 @@ import os.path as osp
 import sys
 
 sys.path.append('.')
-from articulated_processing.datamodels import IMUStreamModel, RealsenseStreamModel
+from markit_processing.datamodels import IMUStreamModel, RealsenseStreamModel
 import streamlit as st
 import yaml
 import cv2

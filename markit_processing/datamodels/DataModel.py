@@ -11,7 +11,7 @@ import numpy as np
 import tqdm
 from realsense_recorder.io import DirectoryReader, get_directory_reader
 
-logger = logging.getLogger('articulated_processing.datamodels.DataModel')
+logger = logging.getLogger('markit_processing.datamodels.DataModel')
 
 def _read_function(path: str) -> np.ndarray:
     """

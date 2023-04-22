@@ -4,9 +4,9 @@ import cv2
 import numpy as np
 import tqdm
 
-from articulated_processing.detector import OpenCVDetector
+from markit_processing.detector import OpenCVDetector
 from realsense_recorder.io import get_directory_reader, DirectoryReader
-from articulated_processing.datamodels import RecordingModel
+from markit_processing.datamodels import RecordingModel
 
 
 def _detection_job(d: OpenCVDetector, reader: DirectoryReader):

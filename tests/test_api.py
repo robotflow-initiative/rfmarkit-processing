@@ -9,18 +9,18 @@ import threading
 
 from rich.progress import track
 
-from articulated_processing.client import RealsenseRecorderClient, TcpBrokerClient
+from markit_processing.client import RealsenseRecorderClient, TcpBrokerClient
 
-from articulated_processing.client.realsense_recorder.api.default import status_v1_status_get as realsense_recorder_status
-from articulated_processing.client.realsense_recorder.api.default import stop_process_v1_stop_post as realsense_recorder_stop
-from articulated_processing.client.realsense_recorder.api.default import start_process_v1_start_post as realsense_recorder_start
-from articulated_processing.client.realsense_recorder.api.default import ready_v1_ready_get as realsense_recorder_ready
+from markit_processing.client.realsense_recorder.api.default import status_v1_status_get as realsense_recorder_status
+from markit_processing.client.realsense_recorder.api.default import stop_process_v1_stop_post as realsense_recorder_stop
+from markit_processing.client.realsense_recorder.api.default import start_process_v1_start_post as realsense_recorder_start
+from markit_processing.client.realsense_recorder.api.default import ready_v1_ready_get as realsense_recorder_ready
 
-from articulated_processing.client.tcpbroker.api.default import status_v1_status_get as tcpbroker_status
-from articulated_processing.client.tcpbroker.api.default import stop_process_v1_stop_post as tcpbroker_stop
-from articulated_processing.client.tcpbroker.api.default import start_process_v1_start_post as tcpbroker_start
-from articulated_processing.client.tcpbroker.api.default import imu_control_v1_imu_control_post as tcpbroker_control
-from articulated_processing.client.tcpbroker.api.default import imu_connection_v1_imu_connection_get as tcpbroker_connection
+from markit_processing.client.tcpbroker.api.default import status_v1_status_get as tcpbroker_status
+from markit_processing.client.tcpbroker.api.default import stop_process_v1_stop_post as tcpbroker_stop
+from markit_processing.client.tcpbroker.api.default import start_process_v1_start_post as tcpbroker_start
+from markit_processing.client.tcpbroker.api.default import imu_control_v1_imu_control_post as tcpbroker_control
+from markit_processing.client.tcpbroker.api.default import imu_connection_v1_imu_connection_get as tcpbroker_connection
 
 CONFIG_REALSENSE_ENDPOINT = "http://127.0.0.1:5050"
 CONFIG_TCPBROKER_ENDPOINT = "http://127.0.0.1:18889"

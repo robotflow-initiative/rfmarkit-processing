@@ -2,7 +2,7 @@ import sys
 
 # NOTES to YUTONG:
 # New dependencies
-from articulated_processing.detector.fiducial import detect_fiducial_marker
+from markit_processing.detector.fiducial import detect_fiducial_marker
 
 # pip install pupil_apriltags -- works on Ubuntu but not on Windows
 # Search "MAGIC NUMBER" for magic numbers

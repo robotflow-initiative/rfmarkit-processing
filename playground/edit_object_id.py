@@ -4,7 +4,7 @@ import numpy as np
 import streamlit as st
 
 sys.path.append('.')
-from articulated_processing.datamodels import IMUStreamModel, RealsenseStreamModel
+from markit_processing.datamodels import IMUStreamModel, RealsenseStreamModel
 import os.path as osp
 import os
 import cv2

@@ -2,7 +2,7 @@ import argparse
 import os.path as osp
 
 import yaml
-from articulated_processing.cmd.model import DefaultExperiment, DefaultTarget
+from markit_processing.cmd.model import DefaultExperiment, DefaultTarget
 from rich.console import Console
 
 
